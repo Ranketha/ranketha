@@ -1,0 +1,279 @@
+/* Base layout */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Serif Sinhala', serif;
+  display: flex;
+  flex-direction: column;
+  background: url('Agri.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #222;
+}
+
+/* Prevent footer from shrinking */
+body > *:not(footer) {
+  flex-shrink: 0;
+}
+
+/* Header with logo and title inline */
+header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 77, 0, 0.85);
+  color: white;
+  padding: 10px 20px;
+  gap: 15px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+  max-height: 60px;
+  object-fit: contain;
+}
+
+.titles h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.titles small {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* WhatsApp icon positioning */
+.whatsapp-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.whatsapp-icon img {
+  width: 30px;
+  height: auto;
+}
+
+/* Navigation menu */
+nav {
+  flex-shrink: 0;
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  background-color: #267f00;
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+
+nav ul li {
+  margin: 0 15px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  position: relative;
+  padding: 5px;
+  transition: all 0.3s ease;
+}
+
+nav ul li a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ffd700;
+  transition: width 0.3s ease;
+}
+
+nav ul li a:hover::after {
+  width: 100%;
+}
+
+nav ul li a:hover {
+  color: #ffd700;
+  transform: scale(1.05);
+}
+
+/* Section styles */
+.section {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  animation: fadeUp 1s ease-in-out forwards;
+}
+
+/* Hero banner centered text on bg */
+.hero-banner {
+  position: relative;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  font-family: 'Noto Serif Sinhala', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  text-shadow:
+    2px 2px 8px rgba(0, 0, 0, 0.8),
+    0 0 10px rgba(0, 0, 0, 0.6);
+}
+
+/* Footer at the bottom */
+footer {
+  background: rgba(13, 77, 0, 0.85);
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments for phones */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+
+  .logo {
+    width: 50px;
+    max-height: 50px;
+  }
+
+  .titles h1 {
+    font-size: 1.2rem;
+    white-space: normal;
+  }
+
+  .titles small {
+    font-size: 0.75rem;
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  nav ul li {
+    margin: 5px 0;
+  }
+
+  .section {
+    margin: 20px 10px;
+    padding: 15px;
+  }
+}
+
+/* Contact form styles */
+#contact form {
+  display: flex;
+  flex-direction: column;
+  max-width: 700px;
+  margin: 0 auto;
+  gap: 15px;
+}
+
+#contact label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#contact input[type="text"],
+#contact input[type="email"],
+#contact textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: 'Noto Serif Sinhala', serif;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+#contact input[type="text"]:focus,
+#contact input[type="email"]:focus,
+#contact textarea:focus {
+  outline: none;
+  border-color: #267f00;
+  box-shadow: 0 0 5px #267f00;
+}
+
+#contact button {
+  background-color: #267f00;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+#contact button:hover {
+  background-color: #1a4e00;
+}
+
+#form-status {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 10px;
+  min-height: 1.2em;
+}
+
+/* Typewriter effect for "ඔබගේ විශ්වාසවත් ගොවි එකමුතුව" */
+#trustworthy {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid rgba(0, 0, 0, 0.75); /* cursor */
+  width: fit-content;
+  animation: typing 5s steps(24, end) ease-out forwards, blink-caret 0.75s step-end infinite;
+  font-weight: bold;
+  font-size: 2rem; /* adjust size if needed */
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 24ch; }
+}
+
+@keyframes blink-caret {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: rgba(0, 0, 0, 0.75); }
+}
