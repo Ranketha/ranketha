@@ -12,10 +12,11 @@
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 15px;
       margin-top: 20px;
+	  flex-wrap: wrap;
     }
     .news-gallery img {
       width: 100%;
-      height: auto;
+      height: 143px;
       border-radius: 8px;
       box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
       transition: transform 0.3s ease;
@@ -23,6 +24,8 @@
     .news-gallery img:hover {
       transform: scale(1.05);
     }
+	
+	#G1 { object-fit: cover; height: 143px; overflow: hidden; } 
   </style>
 </head>
 <body>
@@ -53,15 +56,23 @@
   </nav>
 
   <section class="section">
-    <h2>පුවත්</h2>
-    <p>නවතම ගොවි පුවත්, සමුළු, ව්‍යාපෘති ආරම්භක වැඩසටහන් වැනි දෑ මෙහි දැක්වේ.</p>
+    <h1>පුවත්</h1>
+    <p><b>ගොවි එකමුතුව විසින් සංවිධානය කරන ලද සමුළු, ව්‍යාපෘති ආරම්භක වැඩසටහන්</b></p><hr style="border:1px solid black;opacity: 0.50;">
 
     <!-- News Images -->
+	<b><h2>• 2025 අගෝස්තු මස 12 වන දින පැවති මහ සභා රැස්වීම සහ සුළු අපනයන භෝග පිළිබඳ දැනුවත් කිරීම.</h2></b>
     <div class="news-gallery">
-      <img src="Govi1.png" alt="ගොවි පුවත 1">
-      <img src="Govi2.jpg" alt="ගොවි පුවත 2">
-      <img src="Govi3.jpg" alt="ගොවි පුවත 3">
-      <img src="Govi4.jpg" alt="ගොවි පුවත 4">
+      <img src="Govi1.png" alt="2025 අගෝස්තු මස 12 වන දින පැවති මහ සභා රැස්වීම සහ සුළු අපනයන භෝග පිළිබඳ දැනුවත් කිරීම (Picture 1)">
+      <img src="Govi2.jpg" alt="2025 අගෝස්තු මස 12 වන දින පැවති මහ සභා රැස්වීම සහ සුළු අපනයන භෝග පිළිබඳ දැනුවත් කිරීම (Picture 2)">
+      <img src="Govi3.jpg" alt="2025 අගෝස්තු මස 12 වන දින පැවති මහ සභා රැස්වීම සහ සුළු අපනයන භෝග පිළිබඳ දැනුවත් කිරීම (Picture 3)">
+      <img src="Govi4.jpg" alt="2025 අගෝස්තු මස 12 වන දින පැවති මහ සභා රැස්වීම සහ සුළු අපනයන භෝග පිළිබඳ දැනුවත් කිරීම (Picture 4)">
+	</div>
+	  <b><h2>• 2025.10.05 දින පැවති ඇළ පිරිසිදු කිරීමේ වැඩසටහන</h2></b>
+	<div class="news-gallery">  
+	  <img src="G1.jpg" alt="2025.10.05 දින පැවති ඇළ පිරිසිදු කිරීමේ වැඩසටහන (Picture 1)">
+	  <img src="G2.jpg" alt="2025.10.05 දින පැවති ඇළ පිරිසිදු කිරීමේ වැඩසටහන (Picture 2)">
+	  <img src="G3.jpg" alt="2025.10.05 දින පැවති ඇළ පිරිසිදු කිරීමේ වැඩසටහන (Picture 3)">
+	  <img src="G4.jpg" alt="2025.10.05 දින පැවති ඇළ පිරිසිදු කිරීමේ වැඩසටහන (Picture 4)"  id="G1">
     </div>
   </section>
   
