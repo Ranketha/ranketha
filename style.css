@@ -1,4 +1,4 @@
-/* Base layout */
+/* ================== Base Layout ================== */
 html, body {
   height: 100%;
   margin: 0;
@@ -16,18 +16,21 @@ body > *:not(footer) {
   flex-shrink: 0;
 }
 
-/* Header with logo and title inline */
+/* ================== Header ================== */
 header {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(13, 77, 0, 0.85);
+  background-color: rgba(13, 77, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: white;
   padding: 10px 20px;
   gap: 15px;
   flex-wrap: wrap;
-  flex-shrink: 0;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 }
 
 .header-content {
@@ -53,7 +56,7 @@ header {
   opacity: 0.8;
 }
 
-/* WhatsApp icon positioning */
+/* WhatsApp icon */
 .whatsapp-icon {
   position: absolute;
   right: 20px;
@@ -66,7 +69,7 @@ header {
   height: auto;
 }
 
-/* Navigation menu */
+/* ================== Navigation ================== */
 nav {
   flex-shrink: 0;
 }
@@ -74,11 +77,15 @@ nav {
 nav ul {
   display: flex;
   justify-content: center;
-  background-color: #267f00;
+  background-color: rgba(38, 127, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   list-style: none;
   margin: 0;
   padding: 10px 0;
   flex-wrap: wrap;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 }
 
 nav ul li {
@@ -114,18 +121,21 @@ nav ul li a:hover {
   transform: scale(1.05);
 }
 
-/* Section styles */
+/* ================== Sections ================== */
 .section {
-  max-width: 600px;
+  max-width: 700px;
   margin: 40px auto;
   padding: 20px;
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  color: #222;
   animation: fadeUp 1s ease-in-out forwards;
 }
 
-/* Hero banner centered text on bg */
+/* ================== Hero Banner ================== */
 .hero-banner {
   position: relative;
   height: 300px;
@@ -142,17 +152,21 @@ nav ul li a:hover {
     0 0 10px rgba(0, 0, 0, 0.6);
 }
 
-/* Footer at the bottom */
+/* ================== Footer ================== */
 footer {
-  background: rgba(13, 77, 0, 0.85);
+  background: rgba(13, 77, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: white;
   text-align: center;
   padding: 15px;
   margin-top: auto;
   flex-shrink: 0;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -4px 32px rgba(0,0,0,0.1);
 }
 
-/* Animations */
+/* ================== Animations ================== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -163,7 +177,151 @@ footer {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive adjustments for phones */
+/* ================== Contact Form ================== */
+#contact form {
+  display: flex;
+  flex-direction: column;
+  max-width: 700px;
+  margin: 0 auto;
+  gap: 15px;
+}
+
+#contact label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#contact input[type="text"],
+#contact input[type="email"],
+#contact textarea {
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  font-family: 'Noto Serif Sinhala', serif;
+  font-size: 1rem;
+  resize: vertical;
+  background-color: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #222;
+}
+
+#contact input[type="text"]:focus,
+#contact input[type="email"]:focus,
+#contact textarea:focus {
+  outline: none;
+  border-color: #267f00;
+  box-shadow: 0 0 8px #267f00;
+}
+
+#contact button {
+  background-color: rgba(38,127,0,0.6);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+#contact button:hover {
+  background-color: rgba(38,127,0,0.8);
+  transform: scale(1.05);
+}
+
+#form-status {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 10px;
+  min-height: 1.2em;
+}
+
+/* ================== Typewriter Effect ================== */
+#trustworthy {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid rgba(0,0,0,0.75);
+  width: fit-content;
+  animation: typing 5s steps(24,end) ease-out forwards, blink-caret 0.75s step-end infinite;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 24ch; }
+}
+
+@keyframes blink-caret {
+  0%,100% { border-color: transparent; }
+  50% { border-color: rgba(0,0,0,0.75); }
+}
+
+/* ================== Lens Flare ================== */
+#lens-flare {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: visible;
+}
+
+.flare {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  filter: blur(20px);
+  opacity: 0.15;
+  pointer-events: none;
+  transition: transform 0.1s ease-out;
+}
+
+.flare-circle {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+  top: 10%;
+  left: 15%;
+}
+
+.flare-circle-small {
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 70%);
+  top: 60%;
+  left: 70%;
+  opacity: 0.1;
+}
+
+.flare-streak, .flare-streak2 {
+  width: 300px;
+  height: 20px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+  border-radius: 50%;
+  filter: blur(15px);
+}
+
+.flare-streak { top: 30%; left: 20%; transform: rotate(25deg); opacity: 0.12; }
+.flare-streak2 { top: 50%; left: 50%; transform: rotate(-15deg); opacity: 0.1; }
+
+@keyframes floatFlare {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(5px, -5px); }
+  100% { transform: translate(0, 0); }
+}
+
+.flare-circle, .flare-circle-small, .flare-streak, .flare-streak2 {
+  animation: floatFlare 5s ease-in-out infinite alternate;
+}
+
+/* ================== Responsive ================== */
 @media (max-width: 768px) {
   header {
     flex-direction: column;
@@ -201,79 +359,26 @@ footer {
   }
 }
 
-/* Contact form styles */
-#contact form {
-  display: flex;
-  flex-direction: column;
-  max-width: 700px;
-  margin: 0 auto;
+/* ================== News Gallery ================== */
+.news-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }
 
-#contact label {
-  font-weight: bold;
-  margin-bottom: 5px;
+.news-gallery img {
+  width: 100%;
+  height: 143px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease, filter 0.3s ease;
+  object-fit: cover;
+  backdrop-filter: blur(5px);
 }
 
-#contact input[type="text"],
-#contact input[type="email"],
-#contact textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: 'Noto Serif Sinhala', serif;
-  font-size: 1rem;
-  resize: vertical;
-}
-
-#contact input[type="text"]:focus,
-#contact input[type="email"]:focus,
-#contact textarea:focus {
-  outline: none;
-  border-color: #267f00;
-  box-shadow: 0 0 5px #267f00;
-}
-
-#contact button {
-  background-color: #267f00;
-  color: white;
-  font-weight: bold;
-  border: none;
-  padding: 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: background-color 0.3s ease;
-}
-
-#contact button:hover {
-  background-color: #1a4e00;
-}
-
-#form-status {
-  font-weight: bold;
-  font-size: 1rem;
-  margin-top: 10px;
-  min-height: 1.2em;
-}
-
-/* Typewriter effect for "ඔබගේ විශ්වාසවත් ගොවි එකමුතුව" */
-#trustworthy {
-  overflow: hidden;
-  white-space: nowrap;
-  border-right: 2px solid rgba(0, 0, 0, 0.75); /* cursor */
-  width: fit-content;
-  animation: typing 5s steps(24, end) ease-out forwards, blink-caret 0.75s step-end infinite;
-  font-weight: bold;
-  font-size: 2rem; /* adjust size if needed */
-}
-
-@keyframes typing {
-  from { width: 0; }
-  to { width: 24ch; }
-}
-
-@keyframes blink-caret {
-  0%, 100% { border-color: transparent; }
-  50% { border-color: rgba(0, 0, 0, 0.75); }
+.news-gallery img:hover {
+  transform: scale(1.05);
+  filter: brightness(1.05);
 }
