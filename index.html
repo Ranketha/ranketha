@@ -210,10 +210,10 @@
       border: 1px solid var(--border-light);
       border-radius: 12px;
       width: 100%;
-      max-width: 650px;
+      max-width: 850px; /* Expanded for better visibility & space */
       max-height: 85vh;
       overflow-y: auto;
-      padding: 25px;
+      padding: 30px;
       box-sizing: border-box;
       position: relative;
       box-shadow: 0 10px 35px rgba(0,0,0,0.25);
@@ -267,7 +267,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 25px;
+      gap: 30px;
       padding: 10px 0;
     }
 
@@ -284,8 +284,8 @@
     }
 
     .profile-avatar-large {
-      width: 120px;
-      height: 120px;
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
       object-fit: cover;
       border: 3px solid var(--accent-green);
@@ -325,7 +325,7 @@
 
     @media (min-width: 600px) {
       .profile-info-grid {
-        grid-template-columns: 140px 1fr;
+        grid-template-columns: 160px 1fr;
         align-items: center;
       }
     }
@@ -385,18 +385,18 @@
       transform: none !important;
     }
 
-    /* Status Badges */
-    .badge-verified {
-      background: #b38e46; /* Gold badge */
-      color: #ffffff;
-      font-size: 0.72rem;
-      font-weight: bold;
-      padding: 3px 10px;
-      border-radius: 12px;
+    /* Verified Badges & Facebook/Instagram Blue Scaloped look */
+    .verified-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      letter-spacing: 0.3px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .verified-badge svg {
+      width: 18px;
+      height: 18px;
+      fill: #1D9BF0; /* Classic Verified Blue */
     }
 
     .badge-approved {
@@ -419,16 +419,40 @@
       display: inline-flex;
     }
 
+    /* Payments Structured Table Styling */
+    .payments-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.88rem;
+    }
+
+    .payments-table th, .payments-table td {
+      border: 1px solid var(--border-light);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .payments-table th {
+      background-color: rgba(44, 58, 47, 0.1);
+      color: var(--accent-green);
+      font-weight: bold;
+    }
+
+    .payments-table tr:nth-child(even) {
+      background-color: rgba(221, 229, 215, 0.2);
+    }
+
     /* ================== Admin Control Layout ================== */
     .admin-user-row {
       background: rgba(221, 229, 215, 0.4);
       border: 1px solid var(--border-light);
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
+      padding: 18px;
+      margin-bottom: 15px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .admin-user-header {
@@ -444,7 +468,7 @@
     .admin-actions-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
 
     @media (max-width: 500px) {
@@ -957,7 +981,9 @@
   </section>
   
   <!-- App Info Section -->
-  <section class="section"> 
+  <section class="section">
+<h1>රන්කෙත ගොවි එකමුතුව</h1>
+
 <p>
 රන්කෙත ගොවි එකමුතුව is a farming organization platform that provides
 information about our agricultural community, activities, and services.
@@ -1054,8 +1080,9 @@ information and payment records.
             
             <div class="profile-info-label">නම</div>
             <div>
-              <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 4px;">
                 <span id="view-profile-name" class="profile-info-value" style="flex: 1;">-</span>
+                <!-- Verified Badge Span Holder -->
                 <span id="profile-badge-area"></span>
               </div>
               <input type="text" id="edit-profile-name" class="profile-info-input" style="display: none;">
@@ -1091,7 +1118,22 @@ information and payment records.
 
             <div class="profile-info-label">ගෙවීම් තොරතුරු</div>
             <div>
-              <div id="view-profile-payments" class="profile-info-value" style="font-weight: bold; color: var(--accent-green); background: rgba(179,142,70,0.12); border-color: rgba(179,142,70,0.25);">-</div>
+              <div id="payments-table-container" style="overflow-x: auto; width: 100%;">
+                <table class="payments-table">
+                  <thead>
+                    <tr>
+                      <th>ගෙවීම් අංකය (ID)</th>
+                      <th>විස්තරය (Description)</th>
+                      <th>මුදල (Amount)</th>
+                      <th>දිනය (Date)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="view-profile-payments-list">
+                    <!-- Dynamically populated -->
+                  </tbody>
+                </table>
+                <div id="no-payments-msg" style="text-align: center; color: var(--text-secondary); font-size: 0.9rem; padding: 15px; background: rgba(221, 229, 215, 0.4); border-radius: 6px; border: 1px solid var(--border-light);">ලියාපදිංචි ගෙවීම් වාර්තා නොමැත.</div>
+              </div>
             </div>
 
           </div>
@@ -1321,38 +1363,11 @@ function switchProfileTab(tab) {
   }
 }
 
-// Simulated Database Initialization (Pre-populated with mock users for Gethmin)
+// Simulated Database Initialization (Starts empty, dummy accounts removed)
 function initializeLocalDatabase() {
   let registeredEmails = localStorage.getItem('govi_registered_users');
   if (!registeredEmails) {
-    const mockUsers = ['siriwardhana@gmail.com', 'bandara@gmail.com'];
-    localStorage.setItem('govi_registered_users', JSON.stringify(mockUsers));
-
-    // Farmer 1
-    localStorage.setItem('govi_details_siriwardhana@gmail.com', JSON.stringify({
-      name: "සිරිවර්ධන පෙරේරා",
-      email: "siriwardhana@gmail.com",
-      picture: "logo.png",
-      memberId: "RG-2025-01",
-      phone: "0771234567",
-      address: "නො: 22, ගාලු පාර, පල්ලේගම.",
-      approved: false,
-      verified: false,
-      payments: "තවම ගෙවා නැත"
-    }));
-
-    // Farmer 2
-    localStorage.setItem('govi_details_bandara@gmail.com', JSON.stringify({
-      name: "කේ. බණ්ඩාර මහතා",
-      email: "bandara@gmail.com",
-      picture: "logo.png",
-      memberId: "RG-2025-02",
-      phone: "0719876543",
-      address: "45/A, විහාර පාර, හල්.",
-      approved: true,
-      verified: true,
-      payments: "රු. 1,500 (මහ කන්නය)"
-    }));
+    localStorage.setItem('govi_registered_users', JSON.stringify([]));
   }
 }
 
@@ -1414,16 +1429,20 @@ function loadUserDetails(email, googleUser) {
       address: '',
       approved: false,
       verified: false,
-      payments: 'විස්තර නැත'
+      payments: [] // Start as empty payments list
     };
     localStorage.setItem(key, JSON.stringify(details));
   } else {
     details = JSON.parse(details);
+    // Backward compatibility array check
+    if (!Array.isArray(details.payments)) {
+      details.payments = [];
+    }
   }
 
   // Toggle Admin Tab Visibility dynamically
   const tabsContainer = document.getElementById('profile-tabs');
-  if (email === 'gethminahalangoda@gmail.com') {
+  if (email === 'gethminahalngoda@gmail.com') {
     tabsContainer.style.display = 'flex';
   } else {
     tabsContainer.style.display = 'none';
@@ -1436,10 +1455,16 @@ function loadUserDetails(email, googleUser) {
   document.getElementById('view-profile-phone').textContent = details.phone || 'තවම ඇතුළත් කර නැත';
   document.getElementById('view-profile-address').textContent = details.address || 'තවම ඇතුළත් කර නැත';
 
-  // Apply verified badge next to name
+  // Apply blue Facebook/Instagram style scalloped badge
   let badgeHTML = '';
   if (details.verified) {
-    badgeHTML = `<span class="badge-verified" title="Verified Member">✔ තහවුරු කළ සාමාජික</span>`;
+    badgeHTML = `
+      <span class="verified-badge" title="තහවුරු කළ සාමාජික">
+        <svg viewBox="0 0 24 24">
+          <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.941.1-1.358.275C14.77 2.515 13.512 1.5 12 1.5s-2.77 1.015-3.372 2.285C8.21 3.61 7.75 3.51 7.272 3.51 5.16 3.51 3.45 5.29 3.45 7.5c0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .941-.1 1.358-.275C9.23 21.485 10.488 22.5 12 22.5s2.77-1.015 3.372-2.285c.417.175.878.275 1.358.275 2.108 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.48l-3.26-3.26 1.41-1.41 1.85 1.85 4.7-4.7 1.41 1.41-6.11 6.11z" />
+        </svg>
+      </span>
+    `;
   }
   document.getElementById('profile-badge-area').innerHTML = badgeHTML;
 
@@ -1451,10 +1476,31 @@ function loadUserDetails(email, googleUser) {
     approvalField.innerHTML = `<span class="badge-pending">⌛ අනුමැතිය අපේක්ෂාවෙන්</span>`;
   }
 
-  // Display payment information
-  document.getElementById('view-profile-payments').textContent = details.payments || 'විස්තර නැත';
+  // Display structured payments table
+  const listTbody = document.getElementById('view-profile-payments-list');
+  const noPaymentsMsg = document.getElementById('no-payments-msg');
+  const paymentsTable = document.querySelector('.payments-table');
+  listTbody.innerHTML = '';
 
-  // Apply pictures across DOM elements
+  if (Array.isArray(details.payments) && details.payments.length > 0) {
+    paymentsTable.style.display = 'table';
+    noPaymentsMsg.style.display = 'none';
+    details.payments.forEach(p => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><b>${p.id}</b></td>
+        <td>${p.description}</td>
+        <td><span style="color: var(--accent-green); font-weight: bold;">${p.amount}</span></td>
+        <td>${p.date}</td>
+      `;
+      listTbody.appendChild(row);
+    });
+  } else {
+    paymentsTable.style.display = 'none';
+    noPaymentsMsg.style.display = 'block';
+  }
+
+  // Update avatars across UI
   document.getElementById('profile-avatar-img').src = details.picture;
   document.getElementById('user-avatar').src = details.picture;
   document.getElementById('user-name').textContent = details.name;
@@ -1516,7 +1562,7 @@ saveBtn.addEventListener('click', () => {
   const existingDetails = JSON.parse(localStorage.getItem(key)) || {};
 
   const updatedDetails = {
-    ...existingDetails, // Retain admin approvals and payment details
+    ...existingDetails, // Retain admin approvals and payment details array
     name: document.getElementById('edit-profile-name').value.trim(),
     email: currentUserEmail,
     picture: currentAvatarBase64,
@@ -1595,6 +1641,23 @@ function renderAdminUsersList() {
     // Use safe IDs for input identifiers
     const safeId = email.replace(/@|\./g, '_');
 
+    // Build structured list of existing payment details inside admin view
+    let paymentsAdminListHTML = '';
+    if (Array.isArray(userDetails.payments) && userDetails.payments.length > 0) {
+      paymentsAdminListHTML = '<div style="margin-top: 10px; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 6px;"><strong style="font-size:0.82rem; display:block; margin-bottom:5px; color:var(--text-secondary);">ගෙවීම් ඉතිහාසය (Payment History):</strong>';
+      userDetails.payments.forEach(p => {
+        paymentsAdminListHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background: #ffffff; border:1px solid var(--border-light); padding: 5px 10px; border-radius: 4px; margin-bottom: 4px; font-size: 0.8rem;">
+            <span><b>${p.id}</b> - ${p.description} (<span style="color:var(--accent-green); font-weight:bold;">${p.amount}</span>) [${p.date}]</span>
+            <button class="signout-btn" style="color:#bc3908; padding:0; font-size:0.75rem;" onclick="adminDeletePaymentRecord('${email}', '${p.id}')">මකන්න</button>
+          </div>
+        `;
+      });
+      paymentsAdminListHTML += '</div>';
+    } else {
+      paymentsAdminListHTML = '<div style="font-size:0.8rem; color:var(--text-secondary); margin-top:5px;">තවම ලියාපදිංචි ගෙවීම් වාර්තා නොමැත.</div>';
+    }
+
     const row = document.createElement('div');
     row.className = 'admin-user-row';
     row.innerHTML = `
@@ -1604,22 +1667,30 @@ function renderAdminUsersList() {
           <span style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 5px;">(${userDetails.email})</span>
         </div>
         <div>
-          ${userDetails.verified ? '<span class="badge-verified">✔ Verified</span>' : ''}
+          ${userDetails.verified ? ' <span class="badge-verified" style="padding: 1px 4px;"><svg viewBox="0 0 24 24" width="14" height="14" style="fill:#fff;"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.941.1-1.358.275C14.77 2.515 13.512 1.5 12 1.5s-2.77 1.015-3.372 2.285C8.21 3.61 7.75 3.51 7.272 3.51 5.16 3.51 3.45 5.29 3.45 7.5c0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .941-.1 1.358-.275C9.23 21.485 10.488 22.5 12 22.5s2.77-1.015 3.372-2.285c.417.175.878.275 1.358.275 2.108 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.48l-3.26-3.26 1.41-1.41 1.85 1.85 4.7-4.7 1.41 1.41-6.11 6.11z"/></svg> Verified</span>' : ''}
           ${userDetails.approved ? '<span class="badge-approved">Approved</span>' : '<span class="badge-pending">Pending</span>'}
         </div>
       </div>
       
-      <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 8px 0;">
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0;">
         <b>සාමාජික අංකය:</b> ${userDetails.memberId || '-'} | <b>දුරකථන:</b> ${userDetails.phone || '-'}
         <br><b>ලිපිනය:</b> ${userDetails.address || '-'}
-        <br><b>ගෙවීම් විස්තර:</b> <span style="color: var(--accent-gold); font-weight: bold;">${userDetails.payments || 'විස්තර නැත'}</span>
       </div>
 
-      <div class="admin-actions-grid">
-        <div>
-          <label style="font-size: 0.78rem; font-weight: bold; display: block; margin-bottom: 3px;">ගෙවීම් වාර්තාව</label>
-          <input type="text" id="admin-payments-${safeId}" class="admin-input" value="${userDetails.payments || ''}" placeholder="උදා: රු. 1500 (Paid)">
+      <!-- Rendered payments inside admin row -->
+      ${paymentsAdminListHTML}
+
+      <!-- Add New Payment Form -->
+      <div style="background: rgba(44, 58, 47, 0.05); padding: 12px; border-radius: 6px; margin-top: 5px; border: 1px solid var(--border-light);">
+        <strong style="font-size:0.85rem; color:var(--accent-green); display:block; margin-bottom:8px;">නව ගෙවීම් විස්තරයක් එක් කරන්න (Add Payment)</strong>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <input type="text" id="admin-pay-desc-${safeId}" class="admin-input" style="flex:2; min-width:150px;" placeholder="විස්තරය (Description)">
+          <input type="text" id="admin-pay-amt-${safeId}" class="admin-input" style="flex:1; min-width:100px;" placeholder="මුදල (Amount)">
+          <button class="admin-btn" style="background: var(--accent-gold); color: white;" onclick="adminAddPaymentRecord('${email}')">එකතු කරන්න</button>
         </div>
+      </div>
+
+      <div class="admin-actions-grid" style="margin-top: 5px;">
         <div>
           <label style="font-size: 0.78rem; font-weight: bold; display: block; margin-bottom: 3px;">සාමාජික අංකය වෙනස් කරන්න</label>
           <input type="text" id="admin-memberid-${safeId}" class="admin-input" value="${userDetails.memberId || ''}" placeholder="උදා: RG-2025-05">
@@ -1679,14 +1750,80 @@ window.adminSaveUserFields = function(email) {
   const details = JSON.parse(localStorage.getItem(key));
   if (details) {
     const safeId = email.replace(/@|\./g, '_');
-    const paymentVal = document.getElementById(`admin-payments-${safeId}`).value.trim();
     const memberIdVal = document.getElementById(`admin-memberid-${safeId}`).value.trim();
 
-    details.payments = paymentVal;
     details.memberId = memberIdVal;
 
     localStorage.setItem(key, JSON.stringify(details));
     alert('සාමාජික දත්ත සාර්ථකව යාවත්කාලීන කරන ලදී.');
+    renderAdminUsersList();
+
+    if (email === currentUserEmail) {
+      const savedUser = localStorage.getItem('govi_user');
+      if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+    }
+  }
+};
+
+// Add payment record
+window.adminAddPaymentRecord = function(email) {
+  const key = 'govi_details_' + email;
+  const details = JSON.parse(localStorage.getItem(key));
+  if (details) {
+    const safeId = email.replace(/@|\./g, '_');
+    const descInput = document.getElementById(`admin-pay-desc-${safeId}`);
+    const amtInput = document.getElementById(`admin-pay-amt-${safeId}`);
+
+    const desc = descInput.value.trim();
+    const amt = amtInput.value.trim();
+
+    if (!desc || !amt) {
+      alert('කරුණාකර ගෙවීමේ විස්තරය සහ මුදල ඇතුළත් කරන්න.');
+      return;
+    }
+
+    if (!Array.isArray(details.payments)) {
+      details.payments = [];
+    }
+
+    // Sequence automatic ID (PAY-1001 base)
+    const newPayNo = 1001 + details.payments.length;
+    const autoId = `PAY-${newPayNo}`;
+
+    // Date generation
+    const localDate = new Date().toISOString().split('T')[0];
+
+    const record = {
+      id: autoId,
+      description: desc,
+      amount: amt,
+      date: localDate
+    };
+
+    details.payments.push(record);
+    localStorage.setItem(key, JSON.stringify(details));
+
+    descInput.value = '';
+    amtInput.value = '';
+
+    alert(`ගෙවීම් වාර්තාව සාර්ථකව එකතු කරන ලදී (ID: ${autoId})`);
+    renderAdminUsersList();
+
+    if (email === currentUserEmail) {
+      const savedUser = localStorage.getItem('govi_user');
+      if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+    }
+  }
+};
+
+// Delete payment record
+window.adminDeletePaymentRecord = function(email, paymentId) {
+  if (!confirm('මෙම ගෙවීම් වාර්තාව සම්පූර්ණයෙන්ම මකා දැමීමට ඔබට අවශ්‍යද?')) return;
+  const key = 'govi_details_' + email;
+  const details = JSON.parse(localStorage.getItem(key));
+  if (details && Array.isArray(details.payments)) {
+    details.payments = details.payments.filter(p => p.id !== paymentId);
+    localStorage.setItem(key, JSON.stringify(details));
     renderAdminUsersList();
 
     if (email === currentUserEmail) {
