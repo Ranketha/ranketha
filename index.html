@@ -182,6 +182,129 @@
       text-decoration: underline;
     }
 
+    /* ================== Dynamic Profile Card Styling ================== */
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+      padding: 10px 0;
+    }
+
+    @media (min-width: 600px) {
+      .profile-card {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+
+    .profile-avatar-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .profile-avatar-large {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent-green);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .avatar-edit-label {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: var(--accent-green);
+      color: #ffffff;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.95rem;
+      border: 2px solid var(--panel-bg);
+      transition: var(--transition-bezier);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+    .avatar-edit-label:hover {
+      background: var(--text-primary);
+      transform: scale(1.05);
+    }
+
+    .profile-info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      width: 100%;
+    }
+
+    @media (min-width: 600px) {
+      .profile-info-grid {
+        grid-template-columns: 140px 1fr;
+        align-items: center;
+      }
+    }
+
+    .profile-info-label {
+      font-weight: bold;
+      color: var(--accent-green);
+      font-size: 0.95rem;
+    }
+
+    .profile-info-value {
+      color: var(--text-primary);
+      background: rgba(221, 229, 215, 0.4);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-light);
+      word-break: break-word;
+      font-size: 0.95rem;
+      min-height: 24px;
+    }
+
+    .profile-info-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 12px;
+      border: 1px solid var(--accent-green);
+      border-radius: 6px;
+      font-family: inherit;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: var(--transition-bezier);
+    }
+
+    .profile-info-input:focus {
+      outline: none;
+      background: #ffffff;
+      box-shadow: 0 0 8px rgba(44, 58, 47, 0.15);
+    }
+
+    .profile-actions {
+      margin-top: 25px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      width: 100%;
+    }
+
+    .btn-secondary {
+      background-color: transparent !important;
+      color: var(--text-secondary) !important;
+      border: 1px solid var(--border-light) !important;
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+      transform: none !important;
+    }
+
     /* ================== Desktop Navigation ================== */
     nav {
       max-width: 900px;
@@ -653,16 +776,80 @@
     </p>
   </section>
   
-<section class="section">
-<p>
-රන්කෙත ගොවි එකමුතුව is a farming organization platform that provides
-information about our agricultural community, activities, and services.
-Registered members can access member features including membership
-information and payment records.
-</p>
+  <!-- Member Account Profile Section (Dynamic Implementation) -->
+  <section id="member-account" class="section">
+    <h2>සාමාජික ගිණුම (Member Account)</h2>
+    
+    <!-- When Logged Out -->
+    <div id="account-logged-out-view" style="text-align: center; padding: 20px 0;">
+      <p style="margin-bottom: 20px;">
+        රන්කෙත ගොවි එකමුතුව සාමාජික ගොවි මහතුන් සඳහා වෙන්වූ විශේෂාංග (සාමාජික තොරතුරු සහ ගෙවීම් වාර්තා) ලබා ගැනීමට කරුණාකර ඔබගේ Google ගිණුමෙන් ලොග් වන්න.
+      </p>
+      <p style="font-size: 0.9rem; color: var(--text-secondary);">
+        (පිටුවේ ඉහළ දකුණු කෙළවරේ ඇති Google Sign-In බොත්තම භාවිතා කරන්න)
+      </p>
+    </div>
 
-</section>
-<br>
+    <!-- When Logged In -->
+    <div id="account-logged-in-view" style="display: none;">
+      <div class="profile-card">
+        <!-- Avatar Wrapper -->
+        <div class="profile-avatar-wrapper">
+          <img id="profile-avatar-img" class="profile-avatar-large" src="" alt="පරිශීලක රූපය">
+          <!-- Hidden File Selector -->
+          <label for="avatar-upload-input" id="avatar-edit-lbl" class="avatar-edit-label" style="display: none;" title="රූපය වෙනස් කරන්න">
+            📷
+          </label>
+          <input type="file" id="avatar-upload-input" accept="image/*" style="display: none;">
+        </div>
+
+        <!-- Information Fields -->
+        <div style="flex: 1; width: 100%;">
+          <div class="profile-info-grid">
+            
+            <div class="profile-info-label">නම</div>
+            <div>
+              <div id="view-profile-name" class="profile-info-value">-</div>
+              <input type="text" id="edit-profile-name" class="profile-info-input" style="display: none;">
+            </div>
+
+            <div class="profile-info-label">ඊමේල්</div>
+            <div>
+              <div id="view-profile-email" class="profile-info-value" style="background: rgba(0,0,0,0.03);">-</div>
+              <!-- Email remains locked from Google Credentials -->
+            </div>
+
+            <div class="profile-info-label">සාමාජික අංකය</div>
+            <div>
+              <div id="view-profile-member-id" class="profile-info-value">-</div>
+              <input type="text" id="edit-profile-member-id" class="profile-info-input" style="display: none;">
+            </div>
+
+            <div class="profile-info-label">දුරකථන අංකය</div>
+            <div>
+              <div id="view-profile-phone" class="profile-info-value">-</div>
+              <input type="text" id="edit-profile-phone" class="profile-info-input" style="display: none;">
+            </div>
+
+            <div class="profile-info-label">ලිපිනය</div>
+            <div>
+              <div id="view-profile-address" class="profile-info-value">-</div>
+              <textarea id="edit-profile-address" class="profile-info-input" rows="3" style="display: none; resize: vertical;"></textarea>
+            </div>
+
+          </div>
+
+          <!-- Actions -->
+          <div class="profile-actions">
+            <button id="profile-edit-btn" class="signout-btn" style="background: var(--accent-green); color: white; padding: 8px 18px; border-radius: 20px; font-size: 0.9rem;">තොරතුරු සංස්කරණය</button>
+            <button id="profile-save-btn" class="signout-btn" style="display: none; background: var(--accent-green); color: white; padding: 8px 18px; border-radius: 20px; font-size: 0.9rem;">සුරකින්න</button>
+            <button id="profile-cancel-btn" class="signout-btn btn-secondary" style="display: none; padding: 8px 18px; border-radius: 20px; font-size: 0.9rem;">අවලංගු කරන්න</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Services Section -->
   <section id="services" class="section">
     <h2>සේවාවන්</h2>
@@ -842,10 +1029,34 @@ function animateLensFlares() {
 }
 animateLensFlares();
 
-/* ================== Google Sign-In Logic ================== */
+/* ================== Google Sign-In & Dynamic Profile Logic ================== */
 const signoutBtn = document.getElementById('signout-btn');
-
 signoutBtn.addEventListener('click', handleSignOut);
+
+// Session State variables
+let currentAvatarBase64 = null;
+let currentUserEmail = null;
+
+// DOM Selectors for Profile Card Management
+const editBtn = document.getElementById('profile-edit-btn');
+const saveBtn = document.getElementById('profile-save-btn');
+const cancelBtn = document.getElementById('profile-cancel-btn');
+const avatarUploadInput = document.getElementById('avatar-upload-input');
+const avatarEditLbl = document.getElementById('avatar-edit-lbl');
+
+const viewElements = [
+  'view-profile-name',
+  'view-profile-member-id',
+  'view-profile-phone',
+  'view-profile-address'
+];
+
+const editElements = [
+  'edit-profile-name',
+  'edit-profile-member-id',
+  'edit-profile-phone',
+  'edit-profile-address'
+];
 
 // Decodes JWT Payload safely in frontend
 function decodeJwtResponse(token) {
@@ -865,32 +1076,172 @@ function handleCredentialResponse(response) {
     email: responsePayload.email
   };
   
-  // Keep session active in client
+  // Keep base credential session active
   localStorage.setItem('govi_user', JSON.stringify(userData));
   showUserProfile(userData);
 }
 
 function showUserProfile(user) {
+  // Navigation header widget update
   document.getElementById("google-signin-btn").style.display = "none";
   document.getElementById("user-info").style.display = "flex";
-  document.getElementById("user-avatar").src = user.picture;
-  document.getElementById("user-name").textContent = user.name;
+  
+  // Toggle main sections
+  document.getElementById("account-logged-out-view").style.display = "none";
+  document.getElementById("account-logged-in-view").style.display = "block";
+
+  // Load and apply details
+  loadUserDetails(user.email, user);
 }
 
+function loadUserDetails(email, googleUser) {
+  currentUserEmail = email;
+  const key = 'govi_details_' + email;
+  let details = localStorage.getItem(key);
+  
+  if (!details) {
+    details = {
+      name: googleUser.name,
+      email: email,
+      picture: googleUser.picture,
+      memberId: '',
+      phone: '',
+      address: ''
+    };
+    localStorage.setItem(key, JSON.stringify(details));
+  } else {
+    details = JSON.parse(details);
+  }
+
+  // Display view states
+  document.getElementById('view-profile-name').textContent = details.name || '-';
+  document.getElementById('view-profile-email').textContent = details.email;
+  document.getElementById('view-profile-member-id').textContent = details.memberId || 'තවම ඇතුළත් කර නැත';
+  document.getElementById('view-profile-phone').textContent = details.phone || 'තවම ඇතුළත් කර නැත';
+  document.getElementById('view-profile-address').textContent = details.address || 'තවම ඇතුළත් කර නැත';
+
+  // Apply pictures across DOM elements
+  document.getElementById('profile-avatar-img').src = details.picture;
+  document.getElementById('user-avatar').src = details.picture;
+  document.getElementById('user-name').textContent = details.name;
+  currentAvatarBase64 = details.picture;
+
+  // Initialize input fields
+  document.getElementById('edit-profile-name').value = details.name;
+  document.getElementById('edit-profile-member-id').value = details.memberId;
+  document.getElementById('edit-profile-phone').value = details.phone;
+  document.getElementById('edit-profile-address').value = details.address;
+}
+
+// Enable edit state
+editBtn.addEventListener('click', () => {
+  viewElements.forEach(id => document.getElementById(id).style.display = 'none');
+  editElements.forEach(id => document.getElementById(id).style.display = 'block');
+
+  editBtn.style.display = 'none';
+  saveBtn.style.display = 'inline-block';
+  cancelBtn.style.display = 'inline-block';
+  avatarEditLbl.style.display = 'flex';
+});
+
+// Restore previous state without saving
+cancelBtn.addEventListener('click', () => {
+  viewElements.forEach(id => document.getElementById(id).style.display = 'block');
+  editElements.forEach(id => document.getElementById(id).style.display = 'none');
+
+  editBtn.style.display = 'inline-block';
+  saveBtn.style.display = 'none';
+  cancelBtn.style.display = 'none';
+  avatarEditLbl.style.display = 'none';
+
+  // Revert back using the saved credentials session
+  const savedUser = localStorage.getItem('govi_user');
+  if (savedUser) {
+    loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+  }
+});
+
+// Avatar image selector logic
+avatarUploadInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      currentAvatarBase64 = event.target.result;
+      document.getElementById('profile-avatar-img').src = currentAvatarBase64;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Save details locally
+saveBtn.addEventListener('click', () => {
+  if (!currentUserEmail) return;
+
+  const updatedDetails = {
+    name: document.getElementById('edit-profile-name').value.trim(),
+    email: currentUserEmail,
+    picture: currentAvatarBase64,
+    memberId: document.getElementById('edit-profile-member-id').value.trim(),
+    phone: document.getElementById('edit-profile-phone').value.trim(),
+    address: document.getElementById('edit-profile-address').value.trim()
+  };
+
+  // Persist structured client details
+  localStorage.setItem('govi_details_' + currentUserEmail, JSON.stringify(updatedDetails));
+
+  // Sync basic credentials state for name/avatar accuracy
+  const sessionUser = JSON.parse(localStorage.getItem('govi_user'));
+  if (sessionUser) {
+    sessionUser.name = updatedDetails.name;
+    sessionUser.picture = updatedDetails.picture;
+    localStorage.setItem('govi_user', JSON.stringify(sessionUser));
+  }
+
+  // Restore displays
+  viewElements.forEach(id => document.getElementById(id).style.display = 'block');
+  editElements.forEach(id => document.getElementById(id).style.display = 'none');
+
+  editBtn.style.display = 'inline-block';
+  saveBtn.style.display = 'none';
+  cancelBtn.style.display = 'none';
+  avatarEditLbl.style.display = 'none';
+
+  // Apply new details
+  const savedUser = localStorage.getItem('govi_user');
+  if (savedUser) {
+    loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+  }
+});
+
 function handleSignOut() {
-  // Disable automatic sign-in prompt on next load
   if (typeof google !== 'undefined') {
     google.accounts.id.disableAutoSelect();
   }
+  
+  // Reset active session keys
   localStorage.removeItem('govi_user');
+  currentUserEmail = null;
+  currentAvatarBase64 = null;
+
+  // Toggle DOM view status
   document.getElementById("google-signin-btn").style.display = "block";
   document.getElementById("user-info").style.display = "none";
+  document.getElementById("account-logged-out-view").style.display = "block";
+  document.getElementById("account-logged-in-view").style.display = "none";
+  
+  // Revert layout fields
+  viewElements.forEach(id => document.getElementById(id).style.display = 'block');
+  editElements.forEach(id => document.getElementById(id).style.display = 'none');
+  editBtn.style.display = 'inline-block';
+  saveBtn.style.display = 'none';
+  cancelBtn.style.display = 'none';
+  avatarEditLbl.style.display = 'none';
 }
 
 // Google SDK Initialization Callback
 window.onGoogleLibraryLoad = function () {
   google.accounts.id.initialize({
-    // IMPORTANT: Replace this placeholder with your official Google Client ID
     client_id: "595274010578-rjbehvnrin5o5qc20isn30n8tigvbj8t.apps.googleusercontent.com",
     callback: handleCredentialResponse
   });
