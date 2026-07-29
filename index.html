@@ -3,29 +3,533 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>මුල් පිටුව - රන්කෙත ගොවි එකමුතුව</title>
-
+  <title>රන්කෙත ගොවි එකමුතුව - මුල් පිටුව</title>
+  
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Main CSS -->
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    /* ================== REFINED PLEASANT GREEN THEME SYSTEM ================== */
+    :root {
+      --bg-color: #c9d3c4; /* Pleasant muted sage green background - NO WHITE */
+      --panel-bg: #b3c2ae; /* Solid soft mossy-green panels */
+      --input-bg: #dde5d7; /* Pale pastel-green input background */
+      --text-primary: #1b261d; /* Deep forest-charcoal typography for perfect reading contrast */
+      --text-secondary: #415244; /* Muted pine green */
+      --accent-green: #2c3a2f; /* Dark leafy forest green */
+      --accent-gold: #b38e46; /* Earthy grain gold */
+      --border-light: rgba(44, 58, 47, 0.15);
+      --transition-bezier: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      height: 100%;
+    }
+
+    body {
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Serif Sinhala', serif;
+      background: linear-gradient(rgba(201, 211, 196, 0.95), rgba(201, 211, 196, 0.95)), url('Agri.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-primary);
+      line-height: 1.8;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-color);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-green);
+      border-radius: 3px;
+    }
+
+    main {
+      flex: 1 0 auto;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    /* ================== Header ================== */
+    header {
+      max-width: 1100px;
+      width: calc(100% - 40px);
+      margin: 20px auto 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 10px;
+      border-bottom: 1px solid var(--border-light);
+      box-sizing: border-box;
+      z-index: 1000;
+      position: relative;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 50px;
+      height: auto;
+      object-fit: contain;
+      transition: var(--transition-bezier);
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .titles h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      letter-spacing: -0.5px;
+    }
+
+    .titles small {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .whatsapp-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .whatsapp-icon img {
+      width: 28px;
+      height: auto;
+      transition: var(--transition-bezier);
+    }
+
+    .whatsapp-icon img:hover {
+      transform: scale(1.1) translateY(-2px);
+    }
+
+    /* ================== Desktop Navigation ================== */
+    nav {
+      max-width: 900px;
+      width: calc(100% - 40px);
+      margin: 15px auto;
+      display: flex;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 10px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    nav ul li a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 0.9rem;
+      padding: 10px 18px;
+      border-radius: 30px;
+      transition: var(--transition-bezier);
+      letter-spacing: 0.3px;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: var(--text-primary);
+      background-color: var(--panel-bg);
+      box-shadow: 0 4px 12px rgba(44, 58, 47, 0.08);
+    }
+
+    /* Mobile Nav Toggler */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      z-index: 1100;
+    }
+
+    .menu-toggle svg {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: var(--accent-green);
+      stroke-width: 2;
+      stroke-linecap: round;
+      transition: var(--transition-bezier);
+    }
+
+    /* ================== Hero / Banner Area ================== */
+    .hero-banner {
+      height: 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border-light);
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    #trustworthy {
+      font-size: clamp(1.3rem, 5vw, 2.2rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      border-right: 2px solid var(--accent-gold);
+      white-space: nowrap;
+      width: fit-content;
+      max-width: 100%;
+      overflow: hidden;
+      animation: typing 4s steps(24, end) ease-out forwards, blink-caret 0.75s step-end infinite;
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 24ch; }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: var(--accent-gold); }
+    }
+
+    /* ================== Content Sections ================== */
+    .section {
+      background-color: var(--panel-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: clamp(24px, 5vw, 40px);
+      margin-bottom: 40px;
+      box-sizing: border-box;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      scroll-margin-top: 100px;
+    }
+
+    .section.reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section h1, .section h2 {
+      font-size: clamp(1.35rem, 3.5vw, 1.8rem);
+      font-weight: 700;
+      color: var(--accent-green);
+      margin-top: 0;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
+
+    .section p {
+      font-size: clamp(0.95rem, 2.5vw, 1.12rem);
+      color: var(--text-secondary);
+      margin-bottom: 0;
+      line-height: 1.9;
+    }
+
+    /* ================== News Grid Layout (Preserving exact ratios) ================== */
+    .news-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .news-gallery img {
+      width: 100%;
+      height: 143px; /* Exact height from original layout files */
+      border-radius: 8px;
+      box-shadow: 0px 2px 8px rgba(0,0,0,0.15);
+      object-fit: cover; /* Prevents warping or image squishing */
+      transition: transform 0.3s ease;
+      display: block;
+    }
+
+    .news-gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    /* ================== Contact Form Styling ================== */
+    #contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #contact-form label {
+      font-weight: bold;
+      color: var(--accent-green);
+      font-size: 0.95rem;
+    }
+
+    #contact-form input[type="text"],
+    #contact-form input[type="email"],
+    #contact-form textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      transition: var(--transition-bezier);
+    }
+
+    #contact-form input:focus,
+    #contact-form textarea:focus {
+      outline: none;
+      border-color: var(--accent-green);
+      background-color: #ffffff;
+      box-shadow: 0 4px 15px rgba(44, 58, 47, 0.08);
+    }
+
+    #contact-form button {
+      background-color: var(--accent-green);
+      color: #ffffff;
+      font-weight: bold;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: var(--transition-bezier);
+      align-self: flex-start;
+    }
+
+    #contact-form button:hover {
+      background-color: var(--text-primary);
+      transform: translateY(-2px);
+    }
+
+    #form-status {
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+
+    /* ================== Back to Top Button ================== */
+    #back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 44px;
+      height: 44px;
+      background: var(--accent-green);
+      border: none;
+      color: #ffffff;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border-radius: 50%;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition-bezier);
+      z-index: 999;
+    }
+
+    #back-to-top:hover {
+      background: var(--text-primary);
+      transform: translateY(-3px);
+    }
+
+    #back-to-top.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* ================== Background Lens Flares ================== */
+    #lens-flare {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .flare {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: multiply;
+      filter: blur(40px);
+      opacity: 0.05;
+    }
+
+    .flare-circle {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, var(--accent-green) 0%, rgba(255,255,255,0) 70%);
+      top: -10%; left: -10%;
+    }
+
+    .flare-circle-small {
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, var(--accent-gold) 0%, rgba(255,255,255,0) 70%);
+      bottom: 10%; right: 10%;
+    }
+
+    /* ================== Footer ================== */
+    footer {
+      border-top: 1px solid var(--border-light);
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 30px;
+      margin-top: auto;
+      font-size: 0.85rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    /* ================== Mobile Display Controls ================== */
+    @media (max-width: 768px) {
+      header {
+        margin: 10px auto 0 auto;
+        width: 100%;
+        padding: 15px 20px;
+        border-radius: 0;
+      }
+
+      .whatsapp-icon {
+        margin-right: 40px; /* Layout buffer for hamburger menu */
+      }
+
+      .menu-toggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 280px;
+        margin: 0;
+        z-index: 1050;
+        transition: var(--transition-bezier);
+      }
+
+      nav.active {
+        right: 0;
+      }
+
+      nav ul {
+        flex-direction: column;
+        height: 100%;
+        border-radius: 0;
+        background-color: var(--bg-color);
+        border-left: 1px solid var(--border-light);
+        padding: 60px 24px;
+        gap: 15px;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.03);
+      }
+
+      nav ul li {
+        width: 100%;
+        opacity: 0;
+        transform: translateX(20px);
+        transition: var(--transition-bezier);
+      }
+
+      nav.active ul li {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      nav.active ul li:nth-child(1) { transition-delay: 0.05s; }
+      nav.active ul li:nth-child(2) { transition-delay: 0.1s; }
+      nav.active ul li:nth-child(3) { transition-delay: 0.15s; }
+      nav.active ul li:nth-child(4) { transition-delay: 0.2s; }
+      nav.active ul li:nth-child(5) { transition-delay: 0.25s; }
+
+      nav ul li a {
+        display: block;
+        font-size: 1rem;
+        padding: 12px 20px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      nav ul li a:hover,
+      nav ul li a.active {
+        background-color: rgba(44, 58, 47, 0.05);
+      }
+
+      .hero-banner {
+        height: 180px;
+      }
+
+      .section {
+        margin: 20px 15px;
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .news-gallery {
+        grid-template-columns: 1fr; /* Stacks column grids logically on vertical viewports */
+      }
+    }
+
+    /* Toggle morph paths to shape an X */
+    .menu-toggle.active svg {
+      transform: rotate(90deg);
+    }
+    .menu-toggle.active .line-top {
+      transform: translateY(6px) rotate(45deg);
+      transform-origin: center;
+    }
+    .menu-toggle.active .line-mid {
+      opacity: 0;
+    }
+    .menu-toggle.active .line-bot {
+      transform: translateY(-6px) rotate(-45deg);
+      transform-origin: center;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Lens Flare Effect -->
+<!-- Backdrop Lens Flare Effect -->
 <div id="lens-flare">
   <div class="flare flare-circle"></div>
   <div class="flare flare-circle-small"></div>
-  <div class="flare flare-streak"></div>
-  <div class="flare flare-streak2"></div>
 </div>
 
-<!-- Header -->
+<!-- Global Top Header -->
 <header>
   <div class="header-content">
-    <a href="index.html"><img src="logo.png" alt="සමිති ලාංඡනය" class="logo" /></a>
+    <a href="#home"><img src="logo.png" alt="සමිති ලාංඡනය" class="logo" /></a>
     <div class="titles">
       <h1>රන්කෙත ගොවි එකමුතුව</h1>
       <small>හල්/පල්ලේගම</small>
@@ -33,61 +537,225 @@
   </div>
 
   <div class="whatsapp-icon">
-    <a href="https://chat.whatsapp.com/CtnBMsTr3yOFWfNefYgSzK" target="_blank">
+    <a href="https://chat.whatsapp.com/CtnBMsTr3yOFWfNefYgSzK" target="_blank" aria-label="WhatsApp Link">
       <img src="whatsapp.svg" alt="Join WhatsApp Group" />
     </a>
   </div>
+
+  <button class="menu-toggle" aria-label="Toggle Navigation Menu">
+    <svg viewBox="0 0 24 24">
+      <path class="line-top" d="M4 6h16" />
+      <path class="line-mid" d="M4 12h16" />
+      <path class="line-bot" d="M4 18h16" />
+    </svg>
+  </button>
 </header>
 
-<!-- Navigation -->
+<!-- Global Top Navigation Anchor Menu -->
 <nav>
   <ul>
-    <li><a href="index.html" class="active">මුල් පිටුව</a></li>
-    <li><a href="mission.html">අරමුණ</a></li>
-    <li><a href="services.html">සේවාවන්</a></li>
-    <li><a href="news.html">පුවත්</a></li>
-    <li><a href="contact.html">අප සමඟ සම්බන්ද වන්න</a></li>
+    <li><a href="#home" class="active">මුල් පිටුව</a></li>
+    <li><a href="#mission">අරමුණ</a></li>
+    <li><a href="#services">සේවාවන්</a></li>
+    <li><a href="#news">පුවත්</a></li>
+    <li><a href="#contact">අප සමඟ සම්බන්ද වන්න</a></li>
   </ul>
 </nav>
 
-<!-- Hero Section -->
-<section class="hero-banner">
-  <div id="trustworthy">ඔබගේ විශ්වාසවත් ගොවි එකමුතුව</div>
-</section>
+<!-- Stacking Page Modules -->
+<main>
+  
+  <!-- Hero Section -->
+  <section id="home" class="hero-banner">
+    <div id="trustworthy">ඔබගේ විශ්වාසවත් ගොවි එකමුතුව</div>
+  </section>
 
-<!-- About / Intro Section -->
-<section class="section">
-  <h2>අරමුණ</h2>
-  <p>
-    එකමුතුභාවයෙන් යුක්තව, නවීන තාක්ෂණය භාවිතා කරමින්, ගොවි කටයුතු සංවර්ධනය කර අතරමැදි කන්නයේ දී ද, වී වගා කිරීමට ද සහයෝගය ලබා දෙමින් දැයේ බත සැපයීමට ගමේ දායකත්වය දිරිමත් කිරීම.
-  </p>
-</section>
+  <!-- Mission Section -->
+  <section id="mission" class="section">
+    <h2>අරමුණ</h2>
+    <p>
+      එකමුතුභාවයෙන් යුක්තව, නවීන තාක්ෂණය භාවිතා කරමින්, ගොවි කටයුතු සංවර්ධනය කර අතරමැදි කන්නයේ දී ද, වී වගා කිරීමට ද සහයෝගය ලබා දෙමින් දැයේ බත සැපයීමට ගමේ දායකත්වය දිරිමත් කිරීම.
+    </p>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="section">
+    <h2>සේවාවන්</h2>
+    <p>
+      මෙහිදී ඔබගේ ගොවි කටයුතු සඳහා අප සපයන සේවාවන් පිළිබඳ විස්තර දැක්වීමට බලාපොරොත්තු වේ.
+      (බීජ සැපයීම, පොහොර බෙදාහැරීම, පුහුණු වැඩමුළු, ආධාර වැඩසටහන් වැනි)
+    </p>
+  </section>
+
+  <!-- News Section -->
+  <section id="news" class="section">
+    <h2>පුවත්</h2>
+    <p><b>ගොවි එකමුතුව විසින් සංවිධානය කරන ලද සමුළු, ව්‍යාපෘති ආරම්භක වැඩසටහන්</b></p>
+    <hr style="border:none; height:1px; background: var(--border-light); margin: 20px 0;">
+
+    <b style="font-size: clamp(0.95rem, 2.5vw, 1.15rem); color: var(--accent-green); display:block; margin: 30px 0 10px 0;">
+      • 2025 අගෝස්තු මස 12 වන දින පැවති මහ සභා රැස්වීම සහ සුළු අපනයන භෝග පිළිබඳ දැනුවත් කිරීම.
+    </b>
+    <div class="news-gallery">
+      <img src="Govi1.png" alt="Picture 1">
+      <img src="Govi2.jpg" alt="Picture 2">
+      <img src="Govi3.jpg" alt="Picture 3">
+      <img src="Govi4.jpg" alt="Picture 4">
+    </div>
+
+    <b style="font-size: clamp(0.95rem, 2.5vw, 1.15rem); color: var(--accent-green); display:block; margin: 40px 0 10px 0;">
+      • 2025.10.05 දින පැවති ඇළ පිරිසිදු කිරීමේ වැඩසටහන
+    </b>
+    <div class="news-gallery">
+      <img src="G1.jpg" alt="Picture 1">
+      <img src="G2.jpg" alt="Picture 2">
+      <img src="G3.jpg" alt="Picture 3">
+      <img src="G4.jpg" alt="Picture 4">
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="section">
+    <h2>අප සමඟ සම්බන්ද වන්න</h2>
+    <form id="contact-form">
+      <label for="name">නම</label>
+      <input type="text" id="name" name="name" required placeholder="ඔබගේ නම" />
+
+      <label for="email">ඊමේල්</label>
+      <input type="email" id="email" name="_replyto" required placeholder="ඔබගේ ඊමේල් ලිපිනය" />
+
+      <label for="message">පණිවිඩය</label>
+      <textarea id="message" name="message" rows="5" required placeholder="ඔබගේ පණිවිඩය මෙහි ලියන්න"></textarea>
+
+      <button type="submit">යවන්න</button>
+    </form>
+    <div id="form-status" style="margin-top:15px;"></div>
+  </section>
+
+</main>
 
 <!-- Footer -->
 <footer>
   <p>© 2026 රන්කෙත ගොවි එකමුතුව. සියලු හිමිකම් ඇවිරිණි.</p>
 </footer>
 
-<!-- Lens Flare Script -->
-<script>
-const flares = document.querySelectorAll('#lens-flare .flare');
+<button id="back-to-top" title="ඉහළට">↑</button>
 
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  flares.forEach((flare, index) => {
-    flare.style.transform = `translateY(${scrollY * 0.1 * (index+1)}px)`;
+<!-- UI Performance Logic Scripts -->
+<script>
+// Mobile Hamburger Menu Action Control
+const menuToggle = document.querySelector('.menu-toggle');
+const nav = document.querySelector('nav');
+menuToggle.addEventListener('click', () => {
+  menuToggle.classList.toggle('active');
+  nav.classList.toggle('active');
+});
+
+// Close Mobile Overlay on Anchor Click
+document.querySelectorAll('nav ul li a').forEach(link => {
+  link.addEventListener('click', () => {
+    menuToggle.classList.remove('active');
+    nav.classList.remove('active');
   });
 });
+
+// Scroll Reveal & Active Section Scrollspy Controller
+const sections = document.querySelectorAll('main > section');
+const navLinks = document.querySelectorAll('nav ul li a');
+
+const observerOptions = { threshold: 0.15, rootMargin: "0px 0px -100px 0px" };
+
+const spyObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('reveal');
+      
+      const currentId = entry.target.getAttribute('id');
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${currentId}`) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}, observerOptions);
+
+sections.forEach(sec => spyObserver.observe(sec));
+
+// Smooth Scroll back to top button
+const backToTopBtn = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    backToTopBtn.classList.add('show');
+  } else {
+    backToTopBtn.classList.remove('show');
+  }
+});
+backToTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Formspree Contact Form Submission Handling
+const form = document.getElementById('contact-form');
+const statusDiv = document.getElementById('form-status');
+
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+  const formData = new FormData(form);
+
+  fetch('https://formspree.io/f/xnjewkgp', {
+    method: 'POST',
+    body: formData,
+    headers: { 'Accept': 'application/json' }
+  }).then(response => {
+    if (response.ok) {
+      statusDiv.style.color = '#1b261d';
+      statusDiv.textContent = 'පණිවිඩය යවා ඇත! ඔබට ස්තුතියි.';
+      form.reset();
+    } else {
+      response.json().then(data => {
+        statusDiv.style.color = '#bc3908';
+        statusDiv.textContent = data.errors ? data.errors.map(err=>err.message).join(", ") : 'දෝෂයක් ඇතිවී ඇත. කරුණාකර නැවත උත්සහ කරන්න.';
+      });
+    }
+  }).catch(() => {
+    statusDiv.style.color = '#bc3908';
+    statusDiv.textContent = 'දෝෂයක් ඇතිවී ඇත. කරුණාකර නැවත උත්සහ කරන්න.';
+  });
+});
+
+// Touch responsive automatic float lens flares with smooth tracking
+const flares = document.querySelectorAll('#lens-flare .flare');
+let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+let currentX = mouseX, currentY = mouseY;
+let isMovingMouse = false;
+let autoTimer = 0;
 
 window.addEventListener('mousemove', e => {
-  const mouseX = e.clientX;
-  const mouseY = e.clientY;
-  flares.forEach((flare, index) => {
-    const factor = (index + 1) * 0.02;
-    flare.style.left = `${50 + mouseX * factor}px`;
-    flare.style.top = `${50 + mouseY * factor}px`;
-  });
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  isMovingMouse = true;
 });
+
+function animateLensFlares() {
+  if (!isMovingMouse) {
+    autoTimer += 0.005;
+    mouseX = (window.innerWidth / 2) + Math.sin(autoTimer) * (window.innerWidth * 0.1);
+    mouseY = (window.innerHeight / 2) + Math.cos(autoTimer * 0.8) * (window.innerHeight * 0.06);
+  }
+  currentX += (mouseX - currentX) * 0.05;
+  currentY += (mouseY - currentY) * 0.05;
+  const scrollY = window.scrollY;
+  flares.forEach((flare, index) => {
+    const factor = (index + 1) * 0.015;
+    const xPos = (currentX - window.innerWidth / 2) * factor;
+    const yPos = (currentY - window.innerHeight / 2) * factor + (scrollY * 0.05 * (index + 1));
+    flare.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+  });
+  requestAnimationFrame(animateLensFlares);
+}
+animateLensFlares();
 </script>
 
 </body>
