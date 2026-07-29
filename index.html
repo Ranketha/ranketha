@@ -13,6 +13,10 @@
   <!-- Google Identity Services SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+  <!-- Firebase Compatibility SDKs (Used only if USE_FIREBASE is turned on) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
   <style>
     /* ================== REFINED PLEASANT GREEN THEME SYSTEM ================== */
     :root {
@@ -210,7 +214,7 @@
       border: 1px solid var(--border-light);
       border-radius: 12px;
       width: 100%;
-      max-width: 850px; /* Expanded for better visibility & space */
+      max-width: 850px; /* Expanded for clean layout structure */
       max-height: 85vh;
       overflow-y: auto;
       padding: 30px;
@@ -385,7 +389,7 @@
       transform: none !important;
     }
 
-    /* Verified Badges & Facebook/Instagram Blue Scaloped look */
+    /* Scalloped Verified Badge - Facebook/Instagram Style */
     .verified-badge {
       display: inline-flex;
       align-items: center;
@@ -982,16 +986,12 @@
   
   <!-- App Info Section -->
   <section class="section">
-<h1>රන්කෙත ගොවි එකමුතුව</h1>
-
-<p>
-රන්කෙත ගොවි එකමුතුව is a farming organization platform that provides
-information about our agricultural community, activities, and services.
-Registered members can access member features including membership
-information and payment records.
-</p>
-
-</section>
+    <h1>රන්කෙත ගොවි එකමුතුව</h1>
+    <p>
+      රන්කෙත ගොවි එකමුතුව යනු අපගේ ගොවි ප්‍රජාව, ක්‍රියාකාරකම් සහ සේවාවන් පිළිබඳ තොරතුරු සපයන ගොවි සංවිධාන වේදිකාවකි. 
+      සාමාජිකයින්ට ඉහළ දකුණු කෙළවරේ ඇති ඔබගේ ගිණුම (සාමාජික නම සහ රූපය) ක්ලික් කිරීමෙන් සාමාජික තොරතුරු සහ ගෙවීම් වාර්තා බැලීමට හා සංස්කරණය කිරීමට හැක.
+    </p>
+  </section>
 
   <!-- Services Section -->
   <section id="services" class="section">
@@ -1287,6 +1287,145 @@ function animateLensFlares() {
 }
 animateLensFlares();
 
+/* ================== CENTRAL CLOUD DATABASE INTEGRATION CONFIGURATION ================== */
+// Set this to true to synchronize all users and edits across different devices instantly!
+const USE_FIREBASE = true; 
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB1hB6hl-JQXCHS1pDZG75iJ4-utQ_Xv-0",
+  authDomain: "ranketha-9f46a.firebaseapp.com",
+  databaseURL: "https://ranketha-9f46a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "ranketha-9f46a",
+  storageBucket: "ranketha-9f46a.firebasestorage.app",
+  messagingSenderId: "615186159446",
+  appId: "1:615186159446:web:db6670936aef8aa43c28f7"
+};
+
+// Unified Data Layer (Acts locally by default, syncs via Firebase if toggled on)
+const DB = {
+  init: function() {
+    if (USE_FIREBASE) {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        this.db = firebase.database();
+      } catch (err) {
+        console.error("Firebase SDK load failed. Defaulting to LocalStorage Mode.", err);
+        window.firebaseFallback = true;
+      }
+    }
+  },
+
+  // Save profile state 
+  saveUserDetails: function(email, details, callback) {
+    if (USE_FIREBASE && !window.firebaseFallback) {
+      const safeKey = email.replace(/@|\./g, '_');
+      this.db.ref('users/' + safeKey).set(details)
+        .then(() => { if (callback) callback(); })
+        .catch(err => console.error("Database save failed:", err));
+    } else {
+      localStorage.setItem('govi_details_' + email, JSON.stringify(details));
+      if (callback) callback();
+    }
+  },
+
+  // Load profile state
+  getUserDetails: function(email, googleUser, callback) {
+    if (USE_FIREBASE && !window.firebaseFallback) {
+      const safeKey = email.replace(/@|\./g, '_');
+      this.db.ref('users/' + safeKey).once('value')
+        .then(snapshot => {
+          let details = snapshot.val();
+          if (!details) {
+            details = {
+              name: googleUser.name,
+              email: email,
+              picture: googleUser.picture,
+              memberId: '',
+              phone: '',
+              address: '',
+              approved: false,
+              verified: false,
+              payments: []
+            };
+            this.saveUserDetails(email, details);
+          }
+          if (!Array.isArray(details.payments)) details.payments = [];
+          callback(details);
+        })
+        .catch(err => {
+          console.error("Database read failed. Defaulting to LocalStorage.", err);
+          this.getLocalUserDetails(email, googleUser, callback);
+        });
+    } else {
+      this.getLocalUserDetails(email, googleUser, callback);
+    }
+  },
+
+  getLocalUserDetails: function(email, googleUser, callback) {
+    const key = 'govi_details_' + email;
+    let details = localStorage.getItem(key);
+    if (!details) {
+      details = {
+        name: googleUser.name,
+        email: email,
+        picture: googleUser.picture,
+        memberId: '',
+        phone: '',
+        address: '',
+        approved: false,
+        verified: false,
+        payments: []
+      };
+      localStorage.setItem(key, JSON.stringify(details));
+    } else {
+      details = JSON.parse(details);
+      if (!Array.isArray(details.payments)) details.payments = [];
+    }
+    callback(details);
+  },
+
+  // Retrieve active listing of registered accounts
+  getAllUsers: function(callback) {
+    if (USE_FIREBASE && !window.firebaseFallback) {
+      this.db.ref('users').once('value')
+        .then(snapshot => {
+          const usersMap = snapshot.val() || {};
+          const usersList = Object.values(usersMap);
+          callback(usersList);
+        })
+        .catch(err => {
+          console.error("Database fetch failed. Defaulting to LocalStorage.", err);
+          this.getAllUsersLocal(callback);
+        });
+    } else {
+      this.getAllUsersLocal(callback);
+    }
+  },
+
+  getAllUsersLocal: function(callback) {
+    const emails = JSON.parse(localStorage.getItem('govi_registered_users')) || [];
+    const usersList = [];
+    emails.forEach(email => {
+      const details = JSON.parse(localStorage.getItem('govi_details_' + email));
+      if (details) usersList.push(details);
+    });
+    callback(usersList);
+  },
+
+  // Register email key internally (Used primarily in fallback mode)
+  registerEmail: function(email) {
+    if (USE_FIREBASE && !window.firebaseFallback) {
+      // Firebase structurally indexes by key; separate array is unnecessary
+    } else {
+      let list = JSON.parse(localStorage.getItem('govi_registered_users')) || [];
+      if (!list.includes(email)) {
+        list.push(email);
+        localStorage.setItem('govi_registered_users', JSON.stringify(list));
+      }
+    }
+  }
+};
+
 /* ================== Google Sign-In & Dynamic Profile Logic ================== */
 const signoutBtn = document.getElementById('signout-btn');
 signoutBtn.addEventListener('click', (e) => {
@@ -1363,20 +1502,12 @@ function switchProfileTab(tab) {
   }
 }
 
-// Simulated Database Initialization (Starts empty, dummy accounts removed)
+// Simulated Database Initialization (Clean database startup, dummy accounts removed)
 function initializeLocalDatabase() {
+  DB.init(); // Initialize dynamic DB interfaces
   let registeredEmails = localStorage.getItem('govi_registered_users');
   if (!registeredEmails) {
     localStorage.setItem('govi_registered_users', JSON.stringify([]));
-  }
-}
-
-// Add user dynamically upon logging in
-function registerUserEmail(email) {
-  let list = JSON.parse(localStorage.getItem('govi_registered_users')) || [];
-  if (!list.includes(email)) {
-    list.push(email);
-    localStorage.setItem('govi_registered_users', JSON.stringify(list));
   }
 }
 
@@ -1414,103 +1545,81 @@ function showUserProfile(user) {
 
 function loadUserDetails(email, googleUser) {
   currentUserEmail = email;
-  registerUserEmail(email); // Keep email tracked in shared listing
+  DB.registerEmail(email); // Keep email tracked in shared listing
   
-  const key = 'govi_details_' + email;
-  let details = localStorage.getItem(key);
-  
-  if (!details) {
-    details = {
-      name: googleUser.name,
-      email: email,
-      picture: googleUser.picture,
-      memberId: '',
-      phone: '',
-      address: '',
-      approved: false,
-      verified: false,
-      payments: [] // Start as empty payments list
-    };
-    localStorage.setItem(key, JSON.stringify(details));
-  } else {
-    details = JSON.parse(details);
-    // Backward compatibility array check
-    if (!Array.isArray(details.payments)) {
-      details.payments = [];
+  DB.getUserDetails(email, googleUser, function(details) {
+    // Toggle Admin Tab Visibility dynamically based on corrected email
+    const tabsContainer = document.getElementById('profile-tabs');
+    if (email === 'gethminahalangoda@gmail.com') {
+      tabsContainer.style.display = 'flex';
+    } else {
+      tabsContainer.style.display = 'none';
     }
-  }
 
-  // Toggle Admin Tab Visibility dynamically
-  const tabsContainer = document.getElementById('profile-tabs');
-  if (email === 'gethminahalangoda@gmail.com') {
-    tabsContainer.style.display = 'flex';
-  } else {
-    tabsContainer.style.display = 'none';
-  }
+    // Display view states inside modal
+    document.getElementById('view-profile-name').textContent = details.name || '-';
+    document.getElementById('view-profile-email').textContent = details.email;
+    document.getElementById('view-profile-member-id').textContent = details.memberId || 'තවම ඇතුළත් කර නැත';
+    document.getElementById('view-profile-phone').textContent = details.phone || 'තවම ඇතුළත් කර නැත';
+    document.getElementById('view-profile-address').textContent = details.address || 'තවම ඇතුළත් කර නැත';
 
-  // Display view states inside modal
-  document.getElementById('view-profile-name').textContent = details.name || '-';
-  document.getElementById('view-profile-email').textContent = details.email;
-  document.getElementById('view-profile-member-id').textContent = details.memberId || 'තවම ඇතුළත් කර නැත';
-  document.getElementById('view-profile-phone').textContent = details.phone || 'තවම ඇතුළත් කර නැත';
-  document.getElementById('view-profile-address').textContent = details.address || 'තවම ඇතුළත් කර නැත';
-
-  // Apply blue Facebook/Instagram style scalloped badge
-  let badgeHTML = '';
-  if (details.verified) {
-    badgeHTML = `
-      <span class="verified-badge" title="තහවුරු කළ සාමාජික">
-        <svg viewBox="0 0 24 24">
-          <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.941.1-1.358.275C14.77 2.515 13.512 1.5 12 1.5s-2.77 1.015-3.372 2.285C8.21 3.61 7.75 3.51 7.272 3.51 5.16 3.51 3.45 5.29 3.45 7.5c0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .941-.1 1.358-.275C9.23 21.485 10.488 22.5 12 22.5s2.77-1.015 3.372-2.285c.417.175.878.275 1.358.275 2.108 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.48l-3.26-3.26 1.41-1.41 1.85 1.85 4.7-4.7 1.41 1.41-6.11 6.11z" />
-        </svg>
-      </span>
-    `;
-  }
-  document.getElementById('profile-badge-area').innerHTML = badgeHTML;
-
-  // Render system approval badge
-  const approvalField = document.getElementById('view-profile-status');
-  if (details.approved) {
-    approvalField.innerHTML = `<span class="badge-approved">✔ අනුමත කර ඇත</span>`;
-  } else {
-    approvalField.innerHTML = `<span class="badge-pending">⌛ අනුමැතිය අපේක්ෂාවෙන්</span>`;
-  }
-
-  // Display structured payments table
-  const listTbody = document.getElementById('view-profile-payments-list');
-  const noPaymentsMsg = document.getElementById('no-payments-msg');
-  const paymentsTable = document.querySelector('.payments-table');
-  listTbody.innerHTML = '';
-
-  if (Array.isArray(details.payments) && details.payments.length > 0) {
-    paymentsTable.style.display = 'table';
-    noPaymentsMsg.style.display = 'none';
-    details.payments.forEach(p => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td><b>${p.id}</b></td>
-        <td>${p.description}</td>
-        <td><span style="color: var(--accent-green); font-weight: bold;">${p.amount}</span></td>
-        <td>${p.date}</td>
+    // Apply blue Facebook/Instagram style scalloped badge
+    let badgeHTML = '';
+    if (details.verified) {
+      badgeHTML = `
+        <span class="verified-badge" title="තහවුරු කළ සාමාජික">
+          <svg viewBox="0 0 24 24">
+            <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.941.1-1.358.275C14.77 2.515 13.512 1.5 12 1.5s-2.77 1.015-3.372 2.285C8.21 3.61 7.75 3.51 7.272 3.51 5.16 3.51 3.45 5.29 3.45 7.5c0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .941-.1 1.358-.275C9.23 21.485 10.488 22.5 12 22.5s2.77-1.015 3.372-2.285c.417.175.878.275 1.358.275 2.108 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.48l-3.26-3.26 1.41-1.41 1.85 1.85 4.7-4.7 1.41 1.41-6.11 6.11z" />
+          </svg>
+        </span>
       `;
-      listTbody.appendChild(row);
-    });
-  } else {
-    paymentsTable.style.display = 'none';
-    noPaymentsMsg.style.display = 'block';
-  }
+    }
+    document.getElementById('profile-badge-area').innerHTML = badgeHTML;
 
-  // Update avatars across UI
-  document.getElementById('profile-avatar-img').src = details.picture;
-  document.getElementById('user-avatar').src = details.picture;
-  document.getElementById('user-name').textContent = details.name;
-  currentAvatarBase64 = details.picture;
+    // Render system approval badge
+    const approvalField = document.getElementById('view-profile-status');
+    if (details.approved) {
+      approvalField.innerHTML = `<span class="badge-approved">✔ අනුමත කර ඇත</span>`;
+    } else {
+      approvalField.innerHTML = `<span class="badge-pending">⌛ අනුමැතිය අපේක්ෂාවෙන්</span>`;
+    }
 
-  // Initialize input fields
-  document.getElementById('edit-profile-name').value = details.name;
-  document.getElementById('edit-profile-member-id').value = details.memberId;
-  document.getElementById('edit-profile-phone').value = details.phone;
-  document.getElementById('edit-profile-address').value = details.address;
+    // Display structured payments table
+    const listTbody = document.getElementById('view-profile-payments-list');
+    const noPaymentsMsg = document.getElementById('no-payments-msg');
+    const paymentsTable = document.querySelector('.payments-table');
+    listTbody.innerHTML = '';
+
+    if (Array.isArray(details.payments) && details.payments.length > 0) {
+      paymentsTable.style.display = 'table';
+      noPaymentsMsg.style.display = 'none';
+      details.payments.forEach(p => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><b>${p.id}</b></td>
+          <td>${p.description}</td>
+          <td><span style="color: var(--accent-green); font-weight: bold;">${p.amount}</span></td>
+          <td>${p.date}</td>
+        `;
+        listTbody.appendChild(row);
+      });
+    } else {
+      paymentsTable.style.display = 'none';
+      noPaymentsMsg.style.display = 'block';
+    }
+
+    // Update avatars across UI
+    document.getElementById('profile-avatar-img').src = details.picture;
+    document.getElementById('user-avatar').src = details.picture;
+    document.getElementById('user-name').textContent = details.name;
+    currentAvatarBase64 = details.picture;
+
+    // Initialize input fields
+    document.getElementById('edit-profile-name').value = details.name;
+    document.getElementById('edit-profile-member-id').value = details.memberId;
+    document.getElementById('edit-profile-phone').value = details.phone;
+    document.getElementById('edit-profile-address').value = details.address;
+  });
 }
 
 // Enable edit state
@@ -1559,43 +1668,45 @@ saveBtn.addEventListener('click', () => {
   if (!currentUserEmail) return;
 
   const key = 'govi_details_' + currentUserEmail;
-  const existingDetails = JSON.parse(localStorage.getItem(key)) || {};
+  
+  // Fetch existing details dynamically through the DB layer
+  DB.getUserDetails(currentUserEmail, { name: '', picture: '' }, function(existingDetails) {
+    const updatedDetails = {
+      ...existingDetails, // Retain admin approvals and payment details array
+      name: document.getElementById('edit-profile-name').value.trim(),
+      email: currentUserEmail,
+      picture: currentAvatarBase64,
+      memberId: document.getElementById('edit-profile-member-id').value.trim(),
+      phone: document.getElementById('edit-profile-phone').value.trim(),
+      address: document.getElementById('edit-profile-address').value.trim()
+    };
 
-  const updatedDetails = {
-    ...existingDetails, // Retain admin approvals and payment details array
-    name: document.getElementById('edit-profile-name').value.trim(),
-    email: currentUserEmail,
-    picture: currentAvatarBase64,
-    memberId: document.getElementById('edit-profile-member-id').value.trim(),
-    phone: document.getElementById('edit-profile-phone').value.trim(),
-    address: document.getElementById('edit-profile-address').value.trim()
-  };
+    // Persist structured client details
+    DB.saveUserDetails(currentUserEmail, updatedDetails, function() {
+      // Sync basic credentials state for name/avatar accuracy
+      const sessionUser = JSON.parse(localStorage.getItem('govi_user'));
+      if (sessionUser) {
+        sessionUser.name = updatedDetails.name;
+        sessionUser.picture = updatedDetails.picture;
+        localStorage.setItem('govi_user', JSON.stringify(sessionUser));
+      }
 
-  // Persist structured client details
-  localStorage.setItem(key, JSON.stringify(updatedDetails));
+      // Restore displays
+      viewElements.forEach(id => document.getElementById(id).style.display = 'block');
+      editElements.forEach(id => document.getElementById(id).style.display = 'none');
 
-  // Sync basic credentials state for name/avatar accuracy
-  const sessionUser = JSON.parse(localStorage.getItem('govi_user'));
-  if (sessionUser) {
-    sessionUser.name = updatedDetails.name;
-    sessionUser.picture = updatedDetails.picture;
-    localStorage.setItem('govi_user', JSON.stringify(sessionUser));
-  }
+      editBtn.style.display = 'inline-block';
+      saveBtn.style.display = 'none';
+      cancelBtn.style.display = 'none';
+      avatarEditLbl.style.display = 'none';
 
-  // Restore displays
-  viewElements.forEach(id => document.getElementById(id).style.display = 'block');
-  editElements.forEach(id => document.getElementById(id).style.display = 'none');
-
-  editBtn.style.display = 'inline-block';
-  saveBtn.style.display = 'none';
-  cancelBtn.style.display = 'none';
-  avatarEditLbl.style.display = 'none';
-
-  // Apply new details
-  const savedUser = localStorage.getItem('govi_user');
-  if (savedUser) {
-    loadUserDetails(currentUserEmail, JSON.parse(savedUser));
-  }
+      // Apply new details
+      const savedUser = localStorage.getItem('govi_user');
+      if (savedUser) {
+        loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+      }
+    });
+  });
 });
 
 function handleSignOut() {
@@ -1627,149 +1738,140 @@ function renderAdminUsersList() {
   const container = document.getElementById('admin-users-list');
   container.innerHTML = '';
 
-  const emails = JSON.parse(localStorage.getItem('govi_registered_users')) || [];
+  DB.getAllUsers(function(usersList) {
+    // Exclude the admin from the management list
+    const filteredUsers = usersList.filter(u => u.email !== 'gethminahalangoda@gmail.com');
 
-  if (emails.length === 0) {
-    container.innerHTML = '<p style="text-align:center; padding:20px;">තවම ලියාපදිංචි සාමාජිකයන් කිසිවෙකු නොමැත.</p>';
-    return;
-  }
-
-  emails.forEach(email => {
-    const userDetails = JSON.parse(localStorage.getItem('govi_details_' + email));
-    if (!userDetails) return;
-
-    // Use safe IDs for input identifiers
-    const safeId = email.replace(/@|\./g, '_');
-
-    // Build structured list of existing payment details inside admin view
-    let paymentsAdminListHTML = '';
-    if (Array.isArray(userDetails.payments) && userDetails.payments.length > 0) {
-      paymentsAdminListHTML = '<div style="margin-top: 10px; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 6px;"><strong style="font-size:0.82rem; display:block; margin-bottom:5px; color:var(--text-secondary);">ගෙවීම් ඉතිහාසය (Payment History):</strong>';
-      userDetails.payments.forEach(p => {
-        paymentsAdminListHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; background: #ffffff; border:1px solid var(--border-light); padding: 5px 10px; border-radius: 4px; margin-bottom: 4px; font-size: 0.8rem;">
-            <span><b>${p.id}</b> - ${p.description} (<span style="color:var(--accent-green); font-weight:bold;">${p.amount}</span>) [${p.date}]</span>
-            <button class="signout-btn" style="color:#bc3908; padding:0; font-size:0.75rem;" onclick="adminDeletePaymentRecord('${email}', '${p.id}')">මකන්න</button>
-          </div>
-        `;
-      });
-      paymentsAdminListHTML += '</div>';
-    } else {
-      paymentsAdminListHTML = '<div style="font-size:0.8rem; color:var(--text-secondary); margin-top:5px;">තවම ලියාපදිංචි ගෙවීම් වාර්තා නොමැත.</div>';
+    if (filteredUsers.length === 0) {
+      container.innerHTML = '<p style="text-align:center; padding:20px;">තවම ලියාපදිංචි සාමාජිකයන් කිසිවෙකු නොමැත.</p>';
+      return;
     }
 
-    const row = document.createElement('div');
-    row.className = 'admin-user-row';
-    row.innerHTML = `
-      <div class="admin-user-header">
-        <div>
-          <strong style="font-size: 1.05rem; color: var(--accent-green);">${userDetails.name || 'නමක් නොමැත'}</strong>
-          <span style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 5px;">(${userDetails.email})</span>
-        </div>
-        <div>
-          ${userDetails.verified ? ' <span class="badge-verified" style="padding: 1px 4px;"><svg viewBox="0 0 24 24" width="14" height="14" style="fill:#fff;"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.941.1-1.358.275C14.77 2.515 13.512 1.5 12 1.5s-2.77 1.015-3.372 2.285C8.21 3.61 7.75 3.51 7.272 3.51 5.16 3.51 3.45 5.29 3.45 7.5c0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .941-.1 1.358-.275C9.23 21.485 10.488 22.5 12 22.5s2.77-1.015 3.372-2.285c.417.175.878.275 1.358.275 2.108 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.48l-3.26-3.26 1.41-1.41 1.85 1.85 4.7-4.7 1.41 1.41-6.11 6.11z"/></svg> Verified</span>' : ''}
-          ${userDetails.approved ? '<span class="badge-approved">Approved</span>' : '<span class="badge-pending">Pending</span>'}
-        </div>
-      </div>
-      
-      <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0;">
-        <b>සාමාජික අංකය:</b> ${userDetails.memberId || '-'} | <b>දුරකථන:</b> ${userDetails.phone || '-'}
-        <br><b>ලිපිනය:</b> ${userDetails.address || '-'}
-      </div>
+    filteredUsers.forEach(userDetails => {
+      const email = userDetails.email;
+      const safeId = email.replace(/@|\./g, '_');
 
-      <!-- Rendered payments inside admin row -->
-      ${paymentsAdminListHTML}
+      // Build structured list of existing payment details inside admin view
+      let paymentsAdminListHTML = '';
+      if (Array.isArray(userDetails.payments) && userDetails.payments.length > 0) {
+        paymentsAdminListHTML = '<div style="margin-top: 10px; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 6px;"><strong style="font-size:0.82rem; display:block; margin-bottom:5px; color:var(--text-secondary);">ගෙවීම් ඉතිහාසය (Payment History):</strong>';
+        userDetails.payments.forEach(p => {
+          paymentsAdminListHTML += `
+            <div style="display:flex; justify-content:space-between; align-items:center; background: #ffffff; border:1px solid var(--border-light); padding: 5px 10px; border-radius: 4px; margin-bottom: 4px; font-size: 0.8rem;">
+              <span><b>${p.id}</b> - ${p.description} (<span style="color:var(--accent-green); font-weight:bold;">${p.amount}</span>) [${p.date}]</span>
+              <button class="signout-btn" style="color:#bc3908; padding:0; font-size:0.75rem;" onclick="adminDeletePaymentRecord('${email}', '${p.id}')">මකන්න</button>
+            </div>
+          `;
+        });
+        paymentsAdminListHTML += '</div>';
+      } else {
+        paymentsAdminListHTML = '<div style="font-size:0.8rem; color:var(--text-secondary); margin-top:5px;">තවම ලියාපදිංචි ගෙවීම් වාර්තා නොමැත.</div>';
+      }
 
-      <!-- Add New Payment Form -->
-      <div style="background: rgba(44, 58, 47, 0.05); padding: 12px; border-radius: 6px; margin-top: 5px; border: 1px solid var(--border-light);">
-        <strong style="font-size:0.85rem; color:var(--accent-green); display:block; margin-bottom:8px;">නව ගෙවීම් විස්තරයක් එක් කරන්න (Add Payment)</strong>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <input type="text" id="admin-pay-desc-${safeId}" class="admin-input" style="flex:2; min-width:150px;" placeholder="විස්තරය (Description)">
-          <input type="text" id="admin-pay-amt-${safeId}" class="admin-input" style="flex:1; min-width:100px;" placeholder="මුදල (Amount)">
-          <button class="admin-btn" style="background: var(--accent-gold); color: white;" onclick="adminAddPaymentRecord('${email}')">එකතු කරන්න</button>
+      const row = document.createElement('div');
+      row.className = 'admin-user-row';
+      row.innerHTML = `
+        <div class="admin-user-header">
+          <div>
+            <strong style="font-size: 1.05rem; color: var(--accent-green);">${userDetails.name || 'නමක් නොමැත'}</strong>
+            <span style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 5px;">(${userDetails.email})</span>
+          </div>
+          <div>
+            ${userDetails.verified ? ' <span class="badge-verified" style="padding: 1px 4px;"><svg viewBox="0 0 24 24" width="14" height="14" style="fill:#fff;"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.941.1-1.358.275C14.77 2.515 13.512 1.5 12 1.5s-2.77 1.015-3.372 2.285C8.21 3.61 7.75 3.51 7.272 3.51 5.16 3.51 3.45 5.29 3.45 7.5c0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .941-.1 1.358-.275C9.23 21.485 10.488 22.5 12 22.5s2.77-1.015 3.372-2.285c.417.175.878.275 1.358.275 2.108 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.48l-3.26-3.26 1.41-1.41 1.85 1.85 4.7-4.7 1.41 1.41-6.11 6.11z"/></svg> Verified</span>' : ''}
+            ${userDetails.approved ? '<span class="badge-approved">Approved</span>' : '<span class="badge-pending">Pending</span>'}
+          </div>
         </div>
-      </div>
-
-      <div class="admin-actions-grid" style="margin-top: 5px;">
-        <div>
-          <label style="font-size: 0.78rem; font-weight: bold; display: block; margin-bottom: 3px;">සාමාජික අංකය වෙනස් කරන්න</label>
-          <input type="text" id="admin-memberid-${safeId}" class="admin-input" value="${userDetails.memberId || ''}" placeholder="උදා: RG-2025-05">
+        
+        <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0;">
+          <b>සාමාජික අංකය:</b> ${userDetails.memberId || '-'} | <b>දුරකථන:</b> ${userDetails.phone || '-'}
+          <br><b>ලිපිනය:</b> ${userDetails.address || '-'}
         </div>
-      </div>
 
-      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
-        <button class="admin-btn admin-btn-approve" onclick="adminToggleApproval('${email}')">
-          ${userDetails.approved ? 'අනුමැතිය අවලංගු කරන්න' : 'සාමාජිකත්වය අනුමත කරන්න'}
-        </button>
-        <button class="admin-btn admin-btn-verify" onclick="adminToggleVerification('${email}')">
-          ${userDetails.verified ? 'Verified ලාංඡනය ඉවත් කරන්න' : 'Verified ලාංඡනය ලබාදෙන්න'}
-        </button>
-        <button class="admin-btn" style="background: var(--accent-green); color: white;" onclick="adminSaveUserFields('${email}')">
-          සුරකින්න
-        </button>
-      </div>
-    `;
-    container.appendChild(row);
+        <!-- Rendered payments inside admin row -->
+        ${paymentsAdminListHTML}
+
+        <!-- Add New Payment Form -->
+        <div style="background: rgba(44, 58, 47, 0.05); padding: 12px; border-radius: 6px; margin-top: 5px; border: 1px solid var(--border-light);">
+          <strong style="font-size:0.85rem; color:var(--accent-green); display:block; margin-bottom:8px;">නව ගෙවීම් විස්තරයක් එක් කරන්න (Add Payment)</strong>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <input type="text" id="admin-pay-desc-${safeId}" class="admin-input" style="flex:2; min-width:150px;" placeholder="විස්තරය (Description)">
+            <input type="text" id="admin-pay-amt-${safeId}" class="admin-input" style="flex:1; min-width:100px;" placeholder="මුදල (Amount)">
+            <button class="admin-btn" style="background: var(--accent-gold); color: white;" onclick="adminAddPaymentRecord('${email}')">එකතු කරන්න</button>
+          </div>
+        </div>
+
+        <div class="admin-actions-grid" style="margin-top: 10px;">
+          <div>
+            <label style="font-size: 0.78rem; font-weight: bold; display: block; margin-bottom: 3px;">සාමාජික අංකය වෙනස් කරන්න</label>
+            <input type="text" id="admin-memberid-${safeId}" class="admin-input" value="${userDetails.memberId || ''}" placeholder="RG-2025-XX">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 15px;">
+          <button class="admin-btn admin-btn-approve" onclick="adminToggleApproval('${email}')">
+            ${userDetails.approved ? 'අනුමැතිය අවලංගු කරන්න' : 'සාමාජිකත්වය අනුමත කරන්න'}
+          </button>
+          <button class="admin-btn admin-btn-verify" onclick="adminToggleVerification('${email}')">
+            ${userDetails.verified ? 'Verified ලාංඡනය ඉවත් කරන්න' : 'Verified ලාංඡනය ලබාදෙන්න'}
+          </button>
+          <button class="admin-btn" style="background: var(--accent-green); color: white;" onclick="adminSaveUserFields('${email}')">
+            සුරකින්න
+          </button>
+        </div>
+      `;
+      container.appendChild(row);
+    });
   });
 }
 
 // Global scope registers for onClick triggers
 window.adminToggleApproval = function(email) {
-  const key = 'govi_details_' + email;
-  const details = JSON.parse(localStorage.getItem(key));
-  if (details) {
+  DB.getUserDetails(email, { name: '' }, function(details) {
     details.approved = !details.approved;
-    localStorage.setItem(key, JSON.stringify(details));
-    renderAdminUsersList();
-
-    // Sync immediate displays if admin acts on current user session
-    if (email === currentUserEmail) {
-      const savedUser = localStorage.getItem('govi_user');
-      if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
-    }
-  }
+    DB.saveUserDetails(email, details, function() {
+      renderAdminUsersList();
+      if (email === currentUserEmail) {
+        const savedUser = localStorage.getItem('govi_user');
+        if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+      }
+    });
+  });
 };
 
 window.adminToggleVerification = function(email) {
-  const key = 'govi_details_' + email;
-  const details = JSON.parse(localStorage.getItem(key));
-  if (details) {
+  DB.getUserDetails(email, { name: '' }, function(details) {
     details.verified = !details.verified;
-    localStorage.setItem(key, JSON.stringify(details));
-    renderAdminUsersList();
-
-    if (email === currentUserEmail) {
-      const savedUser = localStorage.getItem('govi_user');
-      if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
-    }
-  }
+    DB.saveUserDetails(email, details, function() {
+      renderAdminUsersList();
+      if (email === currentUserEmail) {
+        const savedUser = localStorage.getItem('govi_user');
+        if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+      }
+    });
+  });
 };
 
 window.adminSaveUserFields = function(email) {
-  const key = 'govi_details_' + email;
-  const details = JSON.parse(localStorage.getItem(key));
-  if (details) {
+  DB.getUserDetails(email, { name: '' }, function(details) {
     const safeId = email.replace(/@|\./g, '_');
     const memberIdVal = document.getElementById(`admin-memberid-${safeId}`).value.trim();
 
     details.memberId = memberIdVal;
 
-    localStorage.setItem(key, JSON.stringify(details));
-    alert('සාමාජික දත්ත සාර්ථකව යාවත්කාලීන කරන ලදී.');
-    renderAdminUsersList();
-
-    if (email === currentUserEmail) {
-      const savedUser = localStorage.getItem('govi_user');
-      if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
-    }
-  }
+    DB.saveUserDetails(email, details, function() {
+      alert('සාමාජික දත්ත සාර්ථකව යාවත්කාලීන කරන ලදී.');
+      renderAdminUsersList();
+      if (email === currentUserEmail) {
+        const savedUser = localStorage.getItem('govi_user');
+        if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+      }
+    });
+  });
 };
 
 // Add payment record
 window.adminAddPaymentRecord = function(email) {
-  const key = 'govi_details_' + email;
-  const details = JSON.parse(localStorage.getItem(key));
-  if (details) {
+  DB.getUserDetails(email, { name: '' }, function(details) {
     const safeId = email.replace(/@|\./g, '_');
     const descInput = document.getElementById(`admin-pay-desc-${safeId}`);
     const amtInput = document.getElementById(`admin-pay-amt-${safeId}`);
@@ -1801,36 +1903,37 @@ window.adminAddPaymentRecord = function(email) {
     };
 
     details.payments.push(record);
-    localStorage.setItem(key, JSON.stringify(details));
+    
+    DB.saveUserDetails(email, details, function() {
+      descInput.value = '';
+      amtInput.value = '';
 
-    descInput.value = '';
-    amtInput.value = '';
+      alert(`ගෙවීම් වාර්තාව සාර්ථකව එකතු කරන ලදී (ID: ${autoId})`);
+      renderAdminUsersList();
 
-    alert(`ගෙවීම් වාර්තාව සාර්ථකව එකතු කරන ලදී (ID: ${autoId})`);
-    renderAdminUsersList();
-
-    if (email === currentUserEmail) {
-      const savedUser = localStorage.getItem('govi_user');
-      if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
-    }
-  }
+      if (email === currentUserEmail) {
+        const savedUser = localStorage.getItem('govi_user');
+        if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+      }
+    });
+  });
 };
 
 // Delete payment record
 window.adminDeletePaymentRecord = function(email, paymentId) {
   if (!confirm('මෙම ගෙවීම් වාර්තාව සම්පූර්ණයෙන්ම මකා දැමීමට ඔබට අවශ්‍යද?')) return;
-  const key = 'govi_details_' + email;
-  const details = JSON.parse(localStorage.getItem(key));
-  if (details && Array.isArray(details.payments)) {
-    details.payments = details.payments.filter(p => p.id !== paymentId);
-    localStorage.setItem(key, JSON.stringify(details));
-    renderAdminUsersList();
-
-    if (email === currentUserEmail) {
-      const savedUser = localStorage.getItem('govi_user');
-      if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+  DB.getUserDetails(email, { name: '' }, function(details) {
+    if (Array.isArray(details.payments)) {
+      details.payments = details.payments.filter(p => p.id !== paymentId);
+      DB.saveUserDetails(email, details, function() {
+        renderAdminUsersList();
+        if (email === currentUserEmail) {
+          const savedUser = localStorage.getItem('govi_user');
+          if (savedUser) loadUserDetails(currentUserEmail, JSON.parse(savedUser));
+        }
+      });
     }
-  }
+  });
 };
 
 // Google SDK Initialization Callback
