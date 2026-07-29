@@ -1,3 +1,5 @@
+<!-- START OF FILE index.html -->
+
 <!DOCTYPE html>
 <html lang="si">
 <head>
@@ -7,6 +9,9 @@
   
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     /* ================== REFINED PLEASANT GREEN THEME SYSTEM ================== */
@@ -109,6 +114,13 @@
       letter-spacing: 1px;
     }
 
+    /* Header Actions for Google Profile & WhatsApp Icon */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
     .whatsapp-icon {
       display: flex;
       align-items: center;
@@ -122,6 +134,52 @@
 
     .whatsapp-icon img:hover {
       transform: scale(1.1) translateY(-2px);
+    }
+
+    /* ================== Google Account Widget Styling ================== */
+    .profile-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(44, 58, 47, 0.08);
+      padding: 5px 12px;
+      border-radius: 30px;
+      border: 1px solid var(--border-light);
+    }
+
+    #user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    #user-name {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--text-primary);
+    }
+
+    .signout-btn {
+      background: none;
+      border: none;
+      color: #9e2a2b;
+      font-family: inherit;
+      font-weight: bold;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: var(--transition-bezier);
+    }
+
+    .signout-btn:hover {
+      text-decoration: underline;
     }
 
     /* ================== Desktop Navigation ================== */
@@ -416,7 +474,7 @@
         border-radius: 0;
       }
 
-      .whatsapp-icon {
+      .header-actions {
         margin-right: 40px; /* Layout buffer for hamburger menu */
       }
 
@@ -426,6 +484,11 @@
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
+      }
+
+      /* Compact profile view on mobile to fit the header */
+      #user-name {
+        display: none;
       }
 
       nav {
@@ -536,10 +599,22 @@
     </div>
   </div>
 
-  <div class="whatsapp-icon">
-    <a href="https://chat.whatsapp.com/CtnBMsTr3yOFWfNefYgSzK" target="_blank" aria-label="WhatsApp Link">
-      <img src="whatsapp.svg" alt="Join WhatsApp Group" />
-    </a>
+  <div class="header-actions">
+    <!-- Google Identity Services Container -->
+    <div id="user-profile-container" class="profile-container">
+      <div id="google-signin-btn"></div>
+      <div id="user-info" class="user-info" style="display: none;">
+        <img id="user-avatar" src="" alt="පරිශීලක රූපය">
+        <span id="user-name"></span>
+        <button id="signout-btn" class="signout-btn">ඉවත් වන්න</button>
+      </div>
+    </div>
+
+    <div class="whatsapp-icon">
+      <a href="https://chat.whatsapp.com/CtnBMsTr3yOFWfNefYgSzK" target="_blank" aria-label="WhatsApp Link">
+        <img src="whatsapp.svg" alt="Join WhatsApp Group" />
+      </a>
+    </div>
   </div>
 
   <button class="menu-toggle" aria-label="Toggle Navigation Menu">
@@ -577,7 +652,17 @@
       එකමුතුභාවයෙන් යුක්තව, නවීන තාක්ෂණය භාවිතා කරමින්, ගොවි කටයුතු සංවර්ධනය කර අතරමැදි කන්නයේ දී ද, වී වගා කිරීමට ද සහයෝගය ලබා දෙමින් දැයේ බත සැපයීමට ගමේ දායකත්වය දිරිමත් කිරීම.
     </p>
   </section>
+  
+<section class="section">
+<p>
+රන්කෙත ගොවි එකමුතුව is a farming organization platform that provides
+information about our agricultural community, activities, and services.
+Registered members can access member features including membership
+information and payment records.
+</p>
 
+</section>
+<br>
   <!-- Services Section -->
   <section id="services" class="section">
     <h2>සේවාවන්</h2>
@@ -756,7 +841,88 @@ function animateLensFlares() {
   requestAnimationFrame(animateLensFlares);
 }
 animateLensFlares();
+
+/* ================== Google Sign-In Logic ================== */
+const signoutBtn = document.getElementById('signout-btn');
+
+signoutBtn.addEventListener('click', handleSignOut);
+
+// Decodes JWT Payload safely in frontend
+function decodeJwtResponse(token) {
+  let base64Url = token.split('.')[1];
+  let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(jsonPayload);
+}
+
+function handleCredentialResponse(response) {
+  const responsePayload = decodeJwtResponse(response.credential);
+  const userData = {
+    name: responsePayload.name,
+    picture: responsePayload.picture,
+    email: responsePayload.email
+  };
+  
+  // Keep session active in client
+  localStorage.setItem('govi_user', JSON.stringify(userData));
+  showUserProfile(userData);
+}
+
+function showUserProfile(user) {
+  document.getElementById("google-signin-btn").style.display = "none";
+  document.getElementById("user-info").style.display = "flex";
+  document.getElementById("user-avatar").src = user.picture;
+  document.getElementById("user-name").textContent = user.name;
+}
+
+function handleSignOut() {
+  // Disable automatic sign-in prompt on next load
+  if (typeof google !== 'undefined') {
+    google.accounts.id.disableAutoSelect();
+  }
+  localStorage.removeItem('govi_user');
+  document.getElementById("google-signin-btn").style.display = "block";
+  document.getElementById("user-info").style.display = "none";
+}
+
+// Google SDK Initialization Callback
+window.onGoogleLibraryLoad = function () {
+  google.accounts.id.initialize({
+    // IMPORTANT: Replace this placeholder with your official Google Client ID
+    client_id: "595274010578-rjbehvnrin5o5qc20isn30n8tigvbj8t.apps.googleusercontent.com",
+    callback: handleCredentialResponse
+  });
+
+  google.accounts.id.renderButton(
+    document.getElementById("google-signin-btn"),
+    { 
+      theme: "outline", 
+      size: "medium", 
+      shape: "pill",
+      text: "signin_with",
+      locale: "si" // Configures Google's UI language to Sinhala
+    }
+  );
+
+  // Check if a saved session is already stored locally
+  const savedUser = localStorage.getItem('govi_user');
+  if (savedUser) {
+    showUserProfile(JSON.parse(savedUser));
+  } else {
+    // Optionally trigger the One Tap authentication dialog
+    google.accounts.id.prompt();
+  }
+};
+
+// Handle cases where the library loads before onGoogleLibraryLoad is set
+if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+  window.onGoogleLibraryLoad();
+}
 </script>
 
 </body>
 </html>
+
+<!-- END OF FILE index.html -->
